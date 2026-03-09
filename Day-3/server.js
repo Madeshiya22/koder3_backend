@@ -5,7 +5,7 @@ import userModel from  "./src/models/users.model.js"
 
 async function connectToDB() {
   await mongoose.connect(
-"mongodb+srv://server:JV2hSGdXn6CDiULi@cluster0.22wui8u.mongodb.net/day-3"  );
+"mongodb+srv://server:ayuXjHV15MngZmDv@cluster0.22wui8u.mongodb.net/day-3"  );
  
   console.log("server is connected to DB");
 }
