@@ -4,7 +4,7 @@ import noteModel from "./src/models/note.model.js";
 
 async function connectToDB() {
   await mongoose.connect(
-    "mongodb+srv://kanak:t9XYOzWJvidnKiEh@cluster0.22wui8u.mongodb.net/day-3_practise",
+    "mongodb+srv://kanak:HfLS356gQ0lKmy4e@cluster0.22wui8u.mongodb.net/day-3_practise",
   );
   console.log("server is connected to DB");
 }
