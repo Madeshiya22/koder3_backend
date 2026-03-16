@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from  'morgan'
 import cookieParser from 'cookie-parser';
 import authRouter from  './routes/auth.routes.js';
+import songRouter from '../src/routes/song.routes.js';
 
 const app = express();
 
@@ -10,7 +11,8 @@ app.use(morgan('dev'));
 app.use(cookieParser());
 
 
-app.use('api/auth',authRouter)
+app.use('/api/auth',authRouter)
+app.use('/api/songs', songRouter)
 
 export default app; 
 
