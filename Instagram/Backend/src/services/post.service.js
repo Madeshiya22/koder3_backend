@@ -2,7 +2,6 @@ import client from "../config/imagekit.js";
 import ImageKit from "@imagekit/nodejs";
 
 
-
 export async function uploadPost(buffer,fileName) {
     try {
         const response = await client.files.upload({
