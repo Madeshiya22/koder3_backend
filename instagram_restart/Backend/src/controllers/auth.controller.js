@@ -1,0 +1,138 @@
+import usermodel from "../models/user.models.js";
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
+import config from "../config/config.js";
+
+export const register = async (req, res) => {
+  const { username, email, password, fullname } = req.body;
+
+  try {
+    const existingUser = await usermodel.findOne({
+      $or: [{ email }, { username }], // ye array ke andar email ya username dono me se koi bhi match ho to user exist karega isko bolte hai aarays of queries
+    });
+    if (existingUser) {
+      return res
+        .status(400)
+        .json({ message: "User already exists", success: "false" });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error checking user existence",
+      success: "false",
+      error: error.message,
+    });
+  }
+
+  const hassedPassword = crypto
+    .createHash("sha256")
+    .update(password)
+    .digest("hex");
+
+  const newUser = new usermodel({
+    username,
+    email,
+    password: hassedPassword,
+    fullname,
+  });
+
+  try {
+    await newUser.save();
+    res
+      .status(201)
+      .json({ message: "User registered successfully", success: "true" });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error registering user",
+      success: "false",
+      error: error.message,
+    });
+  }
+
+  const token = jwt.sign({ userId: newUser._id }, config.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+
+  res.cookie("token", token);
+
+  res.status(200).json({
+    message: "User registered successfully",
+    success: "true",
+    user: {
+      _id: newUser._id,
+      username: newUser.username,
+      email: newUser.email,
+      fullname: newUser.fullname,
+    },
+  });
+};
+
+export const login = async (req, res) => {
+  const { username, email, password } = req.body;
+
+  try {
+    const existingUser = await usermodel.findOne({
+      $or: [{ username }, { email }],
+    });
+    if (!existingUser) {
+      return res.status(400).json({
+        message: "Invalid username, email or password",
+        success: "false",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error checking user existence",
+      success: "false",
+      error: error.message,
+    });
+  }
+
+  const hassedPassword = crypto
+    .createHash("sha256")
+    .update(password)
+    .digest("hex");
+
+  if (hassedPassword !== existingUser.password) {
+    return res.status(400).json({
+      message: "Invalid username, email or password",
+      success: "false",
+    });
+  }
+
+  const token = jwt.sign({ userId: existingUser._id }, config.JWT_SECRET, {
+    expiresIn: "7d",
+  });
+
+  res.cookie("token", token);
+
+  res.status(200).json({
+    message: "User logged in successfully",
+    success: "true",
+    user: {
+      _id: existingUser._id,
+      username: existingUser.username,
+      email: existingUser.email,
+    },
+  });
+};
+
+
+export const getMe = async (req, res) => {
+
+  const user = await usermodel.findById(req.user._id);
+
+  if (!user) {  
+    return res.status(404).json({ message: "User not found", success: "false" });
+  }
+
+  res.status(200).json({
+    message: "User fetched successfully",
+    success: "true",
+    user: {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+
+    },
+  });
+}
