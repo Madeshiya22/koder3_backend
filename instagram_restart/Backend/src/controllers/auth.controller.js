@@ -116,13 +116,13 @@ export const login = async (req, res) => {
   });
 };
 
-
 export const getMe = async (req, res) => {
-
   const user = await usermodel.findById(req.user._id);
 
-  if (!user) {  
-    return res.status(404).json({ message: "User not found", success: "false" });
+  if (!user) {
+    return res
+      .status(404)
+      .json({ message: "User not found", success: "false" });
   }
 
   res.status(200).json({
@@ -132,7 +132,51 @@ export const getMe = async (req, res) => {
       _id: user._id,
       username: user.username,
       email: user.email,
+    },
+  });
+};
 
+export async function googleCallback(req, res) {
+  const {id, displayName, emails: [{ value: email }]} = req.user;
+
+  let user = await usermodel.findOne({
+    $or: [{ email }, { googleId: id }],
+  });
+
+  //  If user exists → update googleId (important)
+  if (user) {
+    if (!user.googleId) {
+      user.googleId = id;
+      await user.save();
+    }
+  } else {
+    // Create new user
+    user = await usermodel.create({
+      username: email.split("@")[0],
+      email: email,
+      fullname: displayName,
+      googleId: id,
+    });
+  }
+
+  // Same token logic
+  const token = jwt.sign({ id: user._id }, config.JWT_SECRET, {
+    expiresIn: "7d",
+  });
+
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: false, 
+  });
+
+  return res.status(200).json({
+    message: "User logged in successfully",
+    success: true,
+    user: {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      fullname: user.fullname,
     },
   });
 }
