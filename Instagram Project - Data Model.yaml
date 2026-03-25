@@ -1,0 +1,72 @@
+Instagram Project - Data Model
+post 
+. user can create posts
+. post can have a single image/video, multiple image/video or mixture of both
+. user can like the post 
+. user can comment on posts
+
+user
+.user can register and  login on app
+.user can follow other users
+.users can accept or reject the follow request
+
+chat
+. user chat one to one on real time to their followers
+
+user entities
+.username
+.email
+.password
+.profileImage
+.fullname
+.private by default: true
+
+
+post entities
+.caption
+.likeCount:Number
+.commentCount:Number
+.media: array of media objects (image/video)
+.user:author(who created the post)
+.timestamp
+
+comment entities
+.user: who commented
+.post: which post is commented on
+.content: text of the comment
+.timestamp
+. likeCount:Number
+. replyCount:Number
+. replies: array of comment objects (for nested comments)
+
+
+{
+   follower:userA
+   following:userB // ye data bs in donnos ke beech me hoga jab userA userB ko follow karega is called edge connection
+   timestamp
+}
+
+{
+  follower:userB
+  following:userC // ye data bs in donnos ke beech me hoga jab userB userC ko follow karega is called edge connection
+  timestamp
+}
+
+follow
+. follower can follow other users
+. following can accept or reject the follow request
+.status: pending, accepted, rejected
+.timestamp
+
+message collection
+.sender: who sent the message userID
+.receiver: who received the message userID
+.content: text of the message
+.timestamp
+.readStatus: read/unread
+
+likes collection
+.post: which post is liked
+.user: who liked the post
+.timestamp
+.type: like/dislike (for future extension to support dislike feature)

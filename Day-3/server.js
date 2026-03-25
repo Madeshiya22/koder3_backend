@@ -1,12 +1,12 @@
 import app from "./src/app.js";
 import mongoose from "mongoose";
 import noteModel from "./src/models/note.model.js";
-import userModel from  "./src/models/users.model.js"
+import userModel from "./src/models/users.model.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 async function connectToDB() {
-  await mongoose.connect(
-"mongodb+srv://server:ayuXjHV15MngZmDv@cluster0.22wui8u.mongodb.net/day-3"  );
- 
+  await mongoose.connect(process.env.MONGO_URI);
   console.log("server is connected to DB");
 }
 
@@ -26,17 +26,15 @@ app.post("/notes", async (req, res) => {
 
 app.get("/notes", async (req, res) => {
   const notes = await noteModel.find({
-    title:'Rahul Madeshiya'
+    title: "Rahul Madeshiya",
   });
   console.log(notes);
 
   res.status(200).json({
     message: "notes fetch successfully",
-    notes
+    notes,
   });
 });
-
-
 
 app.delete("/notes/:id", async (req, res) => {
   await noteModel.findByIdAndDelete(req.params.id);
@@ -45,7 +43,6 @@ app.delete("/notes/:id", async (req, res) => {
     message: "notes deleted successfully",
   });
 });
-
 
 app.patch("/notes/:id", async (req, res) => {
   const id = req.params.id;
@@ -57,59 +54,50 @@ app.patch("/notes/:id", async (req, res) => {
   });
 });
 
-
-
-
 //=================== user CRUD =====================
 
+app.post("/user", async (req, res) => {
+  const { userName, age, email, gender } = req.body;
 
-app.post('/user',async(req,res)=>{
-    const {userName,age,email,gender} = req.body;
+  await userModel.create({
+    userName: userName,
+    age: age,
+    email: email,
+    gender: gender,
+  });
 
-    await userModel.create({
-        userName:userName,
-        age:age,
-        email:email,
-        gender:gender
-    })
+  res.status(201).json({
+    message: "user create successfully",
+  });
+});
 
-    res.status(201).json({
-     message:"user create successfully"
-    })
-})  
+app.get("/user", async (req, res) => {
+  const user = await userModel.find();
+  console.log(user);
 
+  res.status(200).json({
+    message: "user fetch successfully",
+    user,
+  });
+});
 
-app.get('/user',async(req,res)=>{
-    const user = await userModel.find()
-    console.log(user)
+app.delete("/user/:id", async (req, res) => {
+  await userModel.findByIdAndDelete(req.params.id);
 
-    res.status(200).json({
-        message:"user fetch successfully",
-        user
-    })
-})
+  res.status(200).json({
+    message: "user deleted successfully",
+  });
+});
 
+app.patch("/user/:id", async (req, res) => {
+  const id = req.params.id;
+  const { email } = req.body;
+  await userModel.findByIdAndUpdate(id, { email });
 
-app.delete('/user/:id', async(req,res)=>{
-    await userModel.findByIdAndDelete(req.params.id)
-
-     res.status(200).json({
-        message:"user deleted successfully"
-     })
-})
-
-
-app.patch('/user/:id',async(req,res)=>{
-    const id  = req.params.id
-    const {email} = req.body
-    await userModel.findByIdAndUpdate(id,{email})
-
-    res.status(200).json({
-        message:"user update successfully"
-    })
-
-})
-
+  res.status(200).json({
+    message: "user update successfully",
+  });
+});
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

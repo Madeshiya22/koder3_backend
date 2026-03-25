@@ -16,7 +16,7 @@ export const registerValidation = [
     body("username")
     .notEmpty().withMessage("Username is required")
     .isString().withMessage("Username must be a string")
-    .isLength({ min: 3 }).withMessage("Username must be at least 3 characters long"),
+    .isLength({ min: 3 , max: 15 }).withMessage("Username must be between 3 and 15 characters long"),
 
     body("email")
     .notEmpty().withMessage("Email is required")
@@ -26,7 +26,8 @@ export const registerValidation = [
     .notEmpty().withMessage("Password is required")
     .isLength({ min: 6 }).withMessage("Password must be at least 6 characters long")
     .custom((value) => {
-        // Add custom password validation logic here if needed (e.g., check for uppercase, lowercase, digits, special characters)
+      // here is a password check uppercase, lowercase, digit and special character
+
         const hasUpperCase = /[A-Z]/.test(value);
         const hasLowerCase = /[a-z]/.test(value);
         const hasDigit = /[0-9]/.test(value);
@@ -40,10 +41,22 @@ export const registerValidation = [
     body("fullName")
     .notEmpty().withMessage("Full name is required")
     .isString().withMessage("Full name must be a string")
-    .isLength({ min: 3 }).withMessage("Full name must be at least 3 characters long"),
+    .isLength({ min: 3, max: 15 }).withMessage("Full name must be between 3 and 15 characters long"),
 
     validate,
 ]
 
-
-
+export const loginValidation = [
+  body("username")
+    .notEmpty().withMessage("Username is required")
+    .isString().withMessage("Username must be a string")
+    .isLength({ min: 3, max: 15 }).withMessage("Username must be between 3 and 15 characters long"),
+  body("email")
+    .notEmpty().withMessage("Email is required")
+    .isEmail().withMessage("Invalid email format"),
+    body("password")
+    .notEmpty().withMessage("Password is required")
+    .isString().withMessage("Password must be a string")
+    .isLength({ min: 6 }).withMessage("Password must be at least 6 characters long"),
+    validate,
+]
