@@ -1,0 +1,362 @@
+/* Register.module.scss */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    /* Strict height */
+    overflow: hidden;
+    /* No scrolling */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #fff;
+    background-color: #050505;
+}
+
+/* LEFT PANEL (Minimal Dark Gradient + Blobs) */
+.leftPanel {
+    flex: 1;
+    display: none;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #050505 0%, #1b0a2b 55%, #4a1c3c 100%);
+    background-size: 200% 200%;
+    animation: gradientBG 15s ease infinite;
+
+    @media (min-width: 900px) {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px;
+        /* Reduced side padding */
+    }
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.blob1 {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: #471775;
+    border-radius: 50%;
+    filter: blur(120px);
+    top: -150px;
+    left: -150px;
+    opacity: 0.35;
+}
+
+.blob2 {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: #822259;
+    border-radius: 50%;
+    filter: blur(120px);
+    bottom: -50px;
+    right: -100px;
+    opacity: 0.35;
+}
+
+.textContent {
+    position: relative;
+    z-index: 2;
+    color: #fff;
+    max-width: 480px;
+
+    h1 {
+        font-size: 2.3rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 12px;
+        letter-spacing: -1px;
+        background: linear-gradient(195deg, rgb(145, 45, 145), #000000, #580a61);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        -webkit-text-stroke: 0.4px #ffffff86;
+        white-space: nowrap;
+        font-family: 'Panchang', sans-serif;
+    }
+
+    p {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.4;
+    }
+}
+
+.carouselDots {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+
+    .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+
+        &.active {
+            background: #fff;
+            width: 20px;
+            border-radius: 4px;
+        }
+    }
+}
+
+/* RIGHT PANEL (Glassmorphism Card Form) */
+.rightPanel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    /* Minimal padding */
+    position: relative;
+    background: #050505;
+
+    @media (min-width: 900px) {
+        background: transparent;
+    }
+}
+
+.formCard {
+    background: rgba(15, 10, 25, 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 20px;
+    /* Reduced from 32px to save height */
+    border-radius: 16px;
+    width: 100%;
+    max-width: 380px;
+    /* Thoda aur patla kiya */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.heading {
+    font-family: "Instagram Sans", -apple-system, sans-serif;
+    font-size: 1.75rem;
+    /* Reduced */
+    font-weight: 700;
+    margin-bottom: 2px;
+    text-align: center;
+    color: #ffffff;
+    letter-spacing: -1px;
+}
+
+.subtitle {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+    /* Reduced */
+    font-weight: 500;
+    line-height: 1.3;
+    margin-bottom: 16px;
+    /* Reduced from 24px */
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    /* Tighter gap between inputs */
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    label {
+        font-size: 11px;
+        /* Smaller label */
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.8);
+        margin-left: 2px;
+    }
+}
+
+.input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px 12px;
+    /* Reduced padding (Top/Bottom) */
+    font-size: 13px;
+    color: #ffffff;
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    &:focus {
+        border-color: #a855f7;
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+    }
+}
+
+.passwordWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .input {
+        padding-right: 50px;
+    }
+}
+
+.passwordToggle {
+    position: absolute;
+    right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 11px;
+    font-weight: 600;
+    color: #a855f7;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: #d8b4fe;
+    }
+}
+
+.submitBtn {
+    background: linear-gradient(195deg, #7c3aed, black, #a81a95);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    /* Reduced padding */
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 4px;
+    /* Tighter margin */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(92, 5, 44, 0.3);
+
+    &:hover {
+        opacity: 0.95;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(219, 39, 119, 0.4);
+    }
+
+    &:active {
+        transform: translateY(1px);
+    }
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 14px 0;
+    /* Reduced margin */
+
+    span {
+        flex: 1;
+        height: 1px;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    p {
+        margin: 0 10px;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+}
+
+.socialAuth {
+    display: flex;
+    justify-content: center;
+}
+
+.googleBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px;
+    /* Reduced padding */
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+    }
+}
+
+.footer {
+    margin-top: 16px;
+    /* Reduced margin */
+    text-align: center;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.6);
+
+    a {
+        color: #a855f7;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: #d8b4fe;
+        }
+    }
+}
+
+/* Fallback for extremely tiny mobile screens (under 600px height) */
+@media (max-height: 600px) {
+    .container {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .rightPanel {
+        padding: 16px;
+    }
+}
