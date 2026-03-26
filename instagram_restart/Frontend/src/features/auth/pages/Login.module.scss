@@ -78,9 +78,12 @@ html,body {
     line-height: 1.1;
     margin-bottom: 12px;
     letter-spacing: -1px;
-    background: linear-gradient(to right, #ffffff, #ffd1e8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background: linear-gradient(195deg, rgb(145, 45, 145), #000000, #580a61);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        -webkit-text-stroke: 0.4px #ffffff86;
+        white-space: nowrap;
+        font-family: 'Panchang', sans-serif;
   }
 
   p {
@@ -246,7 +249,7 @@ html,body {
 }
 
 .submitBtn {
-  background: linear-gradient(135deg, #7c3aed, #db2777);
+    background: linear-gradient(195deg, #7c3aed, black, #a81a95);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -256,12 +259,12 @@ html,body {
   margin-top: 8px; 
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(219, 39, 119, 0.3);
+  box-shadow: 0 4px 15px rgba(46, 45, 45, 0.3);
 
   &:hover {
     opacity: 0.95;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(219, 39, 119, 0.4); 
+    box-shadow: 0 6px 20px rgba(18, 17, 17, 0.4); 
   }
 
   &:active {
