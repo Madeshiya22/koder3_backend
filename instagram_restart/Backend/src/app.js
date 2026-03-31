@@ -2,7 +2,8 @@ import express from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes.js"; 
-import config from "./config/config.js";  
+import postRouter from "./routes/post.routes.js";
+import {config} from "./config/config.js";  
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import cors from "cors";
@@ -12,6 +13,7 @@ import cors from "cors";
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({extended: true})); // needed to read form-data from any req
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(cors({
@@ -21,6 +23,7 @@ app.use(cors({
 
 
 app.use("/api/auth", authRouter);
+app.use("/api/posts", postRouter);
 
 app.use(passport.initialize());
 

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import {registerValidation,loginValidation } from "../validator/auth.validator.js";
-import {register,login,getMe,googleCallback} from "../controllers/auth.controller.js";
+import { registerValidation, loginValidation } from "../validator/auth.validator.js";
+import { register, login, getMe, googleCallback } from "../controllers/auth.controller.js";
 import passport from "passport";
 import { authUser } from "../middleware/auth.middleware.js";
 

@@ -1,7 +1,7 @@
 import usermodel from "../models/user.models.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import config from "../config/config.js";
+import {config} from "../config/config.js";
 
 export const register = async (req, res) => {
   const { username, email, password, fullname } = req.body;
@@ -15,27 +15,15 @@ export const register = async (req, res) => {
         .status(400)
         .json({ message: "User already exists", success: "false" });
     }
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error checking user existence",
-      success: "false",
-      error: error.message,
+
+    const hassedPassword = crypto.createHash("sha256").update(password).digest("hex");
+
+    const newUser = new usermodel({
+      username,
+      email,
+      password: hassedPassword,
+      fullname,
     });
-  }
-
-  const hassedPassword = crypto
-    .createHash("sha256")
-    .update(password)
-    .digest("hex");
-
-  const newUser = new usermodel({
-    username,
-    email,
-    password: hassedPassword,
-    fullname,
-  });
-
-  try {
     await newUser.save();
 
     const token = jwt.sign({ userId: newUser._id }, config.JWT_SECRET, {
@@ -56,11 +44,15 @@ export const register = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      message: "Error registering user",
+      message: "Error checking user existence",
       success: "false",
       error: error.message,
     });
   }
+
+
+
+
 };
 
 export const login = async (req, res) => {
@@ -134,11 +126,7 @@ export const getMe = async (req, res) => {
 };
 
 export async function googleCallback(req, res) {
-  const {
-    id,
-    displayName,
-    emails: [{ value: email }],
-  } = req.user;
+  const { id, displayName, emails: [{ value: email }] } = req.user;
 
   let user = await usermodel.findOne({
     $or: [{ email }, { googleId: id }],

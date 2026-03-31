@@ -39,7 +39,7 @@ if (!process.env.FRONTEND_URL) {
   throw new Error("FRONTEND_URL is not defined in the environment variables");
 }
 
-export default {
+export const config = {
   MONGO_URI: process.env.MONGO_URI,
   JWT_SECRET: process.env.JWT_SECRET,
   CLIENT_ID: process.env.CLIENT_ID,
