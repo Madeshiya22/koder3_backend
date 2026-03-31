@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Register.module.scss';
+import useAuth from '../hooks/useAuth';
 
 const Register = () => {
+const { handelRegister } = useAuth();
   const [formData, setFormData] = useState({
     fullname: '',
     username: '',
@@ -19,6 +21,7 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    handelRegister(formData);
     console.log('Registering with', formData);
   };
 

@@ -39,7 +39,7 @@ export const registerValidation = [
       }
       return true;
     }),
-  body("fullName")
+  body("fullname")
     .notEmpty()
     .withMessage("Full name is required")
     .isString()

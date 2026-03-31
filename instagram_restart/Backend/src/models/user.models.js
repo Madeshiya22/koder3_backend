@@ -25,8 +25,9 @@ const userSchema = new mongooose.Schema({
     googleId: {
         type: String,
         unique: true,
+        sparse: true,
     },
-})
+});
 
 const usermodel = mongooose.model("User", userSchema);
 

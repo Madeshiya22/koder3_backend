@@ -2,8 +2,8 @@ import axios from "axios";
 
 export async function register({ username, fullname, email, password }) {
   try {
-    const responmse = awaitaxios.post(
-      "http:localhost:3000/api/auth/register",
+    const response = await axios.post(
+      "http://localhost:3000/api/auth/register",
       {
         username,
         fullname,
@@ -12,9 +12,12 @@ export async function register({ username, fullname, email, password }) {
       },
       { withCredentials: true },
     );
-    return responmse.data;
+    return response.data;
   } catch (error) {
-    console.error("Registration failed", error);
+    console.error(
+      "Registration failed:",
+      error.response?.data?.message || error.message
+    );
     throw error;
   }
 }

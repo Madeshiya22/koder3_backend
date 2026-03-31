@@ -1,4 +1,4 @@
-import { register } from "../services/auth.api";
+import { register } from "../services/auth.api.js";
 import { setUser } from "../auth.slice";
 import { useDispatch } from "react-redux";
 
