@@ -1,0 +1,280 @@
+// Colors
+$bg: #f8f9fa;
+$surface-low: #f3f4f5;
+$surface-lowest: #ffffff;
+$text-primary: #191c1d;
+$text-secondary: #767586;
+$accent-gradient: linear-gradient(135deg, #4648d4, #6063ee);
+$primary: #4648d4;
+
+.container {
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem 3rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.card {
+  background-color: $surface-lowest;
+  border-radius: 1.5rem;
+  box-shadow: 0px 24px 48px rgba(25, 28, 29, 0.03);
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 550px;
+  
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+}
+
+.uploadArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  position: relative;
+  transition: background-color 0.3s ease;
+  background-color: $surface-low;
+  border-bottom: 1px solid #e1e3e4;
+
+  @media (min-width: 768px) {
+    border-bottom: none;
+    border-right: 1px solid #e1e3e4;
+  }
+
+  &.dragActive {
+    background-color: rgba(70, 72, 212, 0.05); // Subtle primary tint
+  }
+
+  .dashedBorder {
+    position: absolute;
+    inset: 1rem;
+    border: 2px dashed #c7c4d7;
+    border-radius: 1rem;
+    pointer-events: none;
+    transition: border-color 0.3s ease;
+  }
+
+  &.dragActive .dashedBorder {
+    border-color: $primary;
+  }
+
+  .uploadContent {
+    position: relative;
+    text-align: center;
+    width: 100%;
+    max-width: 24rem;
+
+    .iconWrapper {
+      margin: 0 auto 1.5rem;
+      width: 6rem;
+      height: 6rem;
+      border-radius: 50%;
+      background-color: $surface-lowest;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $text-secondary;
+      animation: bounceSlow 3s infinite ease-in-out;
+    }
+
+    h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: $text-primary;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      color: $text-secondary;
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+
+    .selectBtn {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.875rem 2rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      color: #ffffff;
+      background: $accent-gradient;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0px 4px 12px rgba(70, 72, 212, 0.2);
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0px 6px 16px rgba(70, 72, 212, 0.3);
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+
+      input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.detailsArea {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: $surface-lowest;
+
+  @media (min-width: 768px) {
+    width: 350px;
+  }
+  @media (min-width: 1024px) {
+    width: 400px;
+  }
+
+  .header {
+    padding: 1rem;
+    border-bottom: 1px solid #e1e3e4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    
+    h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: $text-primary;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      margin: 0;
+    }
+
+    .shareBtn {
+      position: absolute;
+      right: 1.25rem;
+      color: $primary;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.875rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.2s;
+
+      &:hover {
+        color: darken($primary, 10%);
+      }
+    }
+  }
+
+  .content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+
+    .userInfo {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+
+      .avatar {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        background: linear-gradient(to top right, #ffdad6, #c0c1ff);
+        border: 1px solid #e1e3e4;
+      }
+
+      .username {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 600;
+        color: $text-primary;
+        font-size: 0.95rem;
+        margin-left: 0.75rem;
+      }
+    }
+
+    .captionInput {
+      width: 100%;
+      flex: 1;
+      resize: none;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: $text-primary;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+
+      &::placeholder {
+        color: $text-secondary;
+      }
+    }
+
+    .footer {
+      margin-top: auto;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e1e3e4;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: $text-secondary;
+
+      .emojiBtn {
+        background: none;
+        border: none;
+        color: $text-secondary;
+        cursor: pointer;
+        padding: 0;
+        transition: color 0.2s;
+        display: flex;
+        align-items: center;
+
+        &:hover {
+          color: $text-primary;
+        }
+      }
+
+      .charCount {
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+@keyframes bounceSlow {
+  0%, 100% {
+    transform: translateY(-5%);
+  }
+  50% {
+    transform: translateY(5%);
+  }
+}

@@ -55,7 +55,6 @@ export async function createPost(req, res) {
 export const getAllPosts = async (req, res) => {
   try {
     const posts = await postModel.find()
-      .populate("author", "username fullname profilePicture")
       .sort({ createdAt: -1 });
 
     res.json(posts);

@@ -1,0 +1,230 @@
+$surface-low: #f3f4f5;
+$surface-lowest: #ffffff;
+$text-primary: #191c1d;
+$text-secondary: #767586;
+$accent-gradient: linear-gradient(135deg, #4648d4, #6063ee);
+
+.post {
+  background-color: $surface-lowest;
+  border-radius: 1.5rem; // xl rounding for cards
+  padding: 1.25rem;
+  box-shadow: 0px 24px 48px rgba(25, 28, 29, 0.03); // Ambient shadow
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  .authorInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .avatarWrapper {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      padding: 2px; // Space for story ring
+      background: linear-gradient(to top right, #904900, #4648d4);
+      border-radius: 14px; // Squircle / super-ellipse feel
+      
+      .avatar {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+        border: 2px solid $surface-lowest;
+      }
+    }
+
+    .meta {
+      display: flex;
+      flex-direction: column;
+
+      .username {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        letter-spacing: -0.02em;
+        color: $text-primary;
+      }
+
+      .location {
+        font-size: 0.75rem;
+        color: $text-secondary;
+      }
+    }
+  }
+
+  .moreBtn {
+    background: none;
+    border: none;
+    color: $text-primary;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+}
+
+.carouselContainer {
+  width: 100%;
+  position: relative;
+}
+
+.mediaCarousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  aspect-ratio: 1 / 1;
+  background-color: $surface-low;
+  border-radius: 1rem;
+  margin-bottom: 1.25rem;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.carouselItem {
+  width: 100%;
+  height: 100%;
+  flex: none;
+  scroll-snap-align: center;
+  position: relative;
+  break-inside: avoid;
+}
+
+.media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  position: relative;
+
+  .leftActions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .carouselDots {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.375rem;
+
+    .dot {
+      height: 0.375rem;
+      border-radius: 999px;
+      transition: all 0.3s ease;
+      background-color: #d9dadb;
+
+      &.active {
+        width: 0.375rem;
+        background-color: #4648d4; // Primary color
+      }
+      &.inactive {
+        width: 0.375rem;
+      }
+    }
+  }
+
+  button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: $text-primary;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+    
+    &.likeHover:hover {
+      color: #ba1a1a;
+    }
+  }
+}
+
+.likes {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  color: $text-primary;
+}
+
+.captionSection {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+  font-size: 0.9rem;
+
+  .captionUsername {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    margin-right: 0.5rem;
+    color: $text-primary;
+  }
+
+  .captionText {
+    color: $text-primary;
+  }
+}
+
+.timestamp {
+  font-size: 0.75rem;
+  color: $text-secondary;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.addComment {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: $surface-low;
+  padding: 0.5rem 0.75rem;
+  border-radius: 2rem;
+
+  input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: $text-primary;
+
+    &::placeholder {
+      color: $text-secondary;
+    }
+  }
+
+  .postBtn {
+    background: none;
+    border: none;
+    color: #4648d4;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
