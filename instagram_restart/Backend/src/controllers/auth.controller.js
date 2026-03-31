@@ -23,10 +23,7 @@ export const register = async (req, res) => {
     });
   }
 
-  const hassedPassword = crypto
-    .createHash("sha256")
-    .update(password)
-    .digest("hex");
+  const hassedPassword = crypto.createHash("sha256").update(password).digest("hex");
 
   const newUser = new usermodel({
     username,
@@ -37,9 +34,9 @@ export const register = async (req, res) => {
 
   try {
     await newUser.save();
-    res
-      .status(201)
-      .json({ message: "User registered successfully", success: "true" });
+    res.status(201).json({ 
+      message: "User registered successfully", success: "true" 
+    });
   } catch (error) {
     res.status(500).json({
       message: "Error registering user",
