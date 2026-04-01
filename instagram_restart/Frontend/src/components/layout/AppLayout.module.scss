@@ -1,0 +1,53 @@
+// AppLayout.module.scss
+// Incorporating "Digital Gallery" / Aura design system tokens
+$bg: #f8f9fa;
+$surface-container: #ffffff;
+$outline-variant: rgba(199, 196, 215, 0.2); // Ghost border approximation
+
+.layoutContainer {
+  background-color: $bg;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', sans-serif;
+
+  // Adapting to Instagram's desktop aesthetic 
+  // where the screen shifts from vertical stack to row layout
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+}
+
+.mainContent {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+
+  // Accommodates mobile bottom bar height (64px)
+  padding-bottom: 64px;
+
+  @media (min-width: 768px) {
+    padding-bottom: 0;
+    padding-left: 72px; // Make room for fixed slim sidebar
+  }
+}
+
+.contentWrapper {
+  width: 100%;
+  height: 100%;
+  // Instagram desktop max width for standard center feed
+  max-width: 935px; 
+  padding: 0 1rem; // base padding
+  
+  @media (min-width: 768px) {
+    padding: 2rem 1rem; 
+  }
+
+  // Matching lg:px-8
+  @media (min-width: 1024px) {
+    padding-left: 2rem; 
+    padding-right: 2rem;
+  }
+}

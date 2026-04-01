@@ -1,0 +1,184 @@
+// Sidebar.module.scss
+
+$sidebar-bg: #000000;      // Pitch black to match the image precisely
+$icon-color: #f5f5f5;      // Soft bright white for icons
+$hover-bg: #262626;        // Very slight highlight on hover
+$border-color: #262626;    // Subtle border color for edges
+
+// Desktop Navigation Container
+.desktopNav {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 72px;             // Perfectly slim width
+  background-color: $sidebar-bg;
+  border-right: 1px solid $border-color;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 0;
+  z-index: 50;
+  
+  @media (min-width: 768px) {
+    display: flex;
+  }
+}
+
+// Logo Wrapping
+.logoIcon {
+  margin-bottom: 2rem;
+  color: $icon-color;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+// Nav items main flex
+.navItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  width: 100%;
+  align-items: center;
+}
+
+// The core interactive rounded nav item wrapper
+.navLink {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: $icon-color;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+
+  .iconWrapper {
+    position: relative;
+    display: flex;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    background-color: $hover-bg;
+    
+    .iconWrapper {
+      transform: scale(1.05);
+    }
+
+    // Displays tooltip text
+    .tooltip {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+      visibility: visible;
+    }
+  }
+
+  // Active state styling logic
+  &.active {
+    .iconWrapper {
+      svg {
+        stroke-width: 2.5 !important; 
+      }
+    }
+  }
+}
+
+// Tooltip logic for "text appearing in front of home icon"
+.tooltip {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(-8px);
+  margin-left: 14px;
+  background-color: #262626;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  z-index: 60;
+}
+
+// Notification Badge (Red marker with '4' from the image)
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background-color: #ff3040;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid $sidebar-bg;
+}
+
+// Bottom Menu Items
+.bottomItems {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  align-items: center;
+}
+
+// Mobile specific overrides matching dark theme layout
+.mobileNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: $sidebar-bg;
+  border-top: 1px solid $border-color;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 50px;
+  z-index: 50;
+  padding-bottom: env(safe-area-inset-bottom);
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.mobileLink {
+  padding: 0.5rem;
+  color: $icon-color;
+  display: flex;
+  align-items: center;
+  transition: transform 0.1s;
+
+  &:active {
+    transform: scale(0.95);
+  }
+}

@@ -26,6 +26,30 @@ const CreatePost = () => {
         }
     };
 
+    
+    const handleFileChange = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.target.files && e.target.files[ 0 ]) {
+            const files = e.target.files;
+            fileInputRef.current = files;
+        }
+    }
+
+    const handleShare = async () => {
+
+        console.log(fileInputRef.current)
+
+        const data = await handleCreatePost({
+            files: fileInputRef.current,
+            caption
+        })
+
+        navigate('/')
+
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.card}>
