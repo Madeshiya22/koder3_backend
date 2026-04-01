@@ -1,13 +1,13 @@
 import usermodel from "../models/user.models.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import {config} from "../config/config.js";
+import { config } from "../config/config.js";
 
 export const register = async (req, res) => {
   const { username, email, password, fullname } = req.body;
 
   try {
-    const existingUser = await usermodel.findOne({
+    let existingUser = await usermodel.findOne({
       $or: [{ email }, { username }], // ye array ke andar email ya username dono me se koi bhi match ho to user exist karega isko bolte hai aarays of queries
     });
     if (existingUser) {
@@ -57,29 +57,34 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   const { username, email, password } = req.body;
-
+  let existingUser
   try {
-    const existingUser = await usermodel.findOne({
+    existingUser = await usermodel.findOne({
       $or: [{ username }, { email }],
     });
+
+    console.log(existingUser)
     if (!existingUser) {
       return res.status(400).json({
         message: "Invalid username, email or password",
         success: "false",
       });
     }
+
   } catch (error) {
     return res.status(500).json({
       message: "Error checking user existence",
       success: "false",
       error: error.message,
     });
-  }
 
+  }
   const hassedPassword = crypto
     .createHash("sha256")
     .update(password)
     .digest("hex");
+
+
 
   if (hassedPassword !== existingUser.password) {
     return res.status(400).json({
