@@ -13,10 +13,10 @@ export async function createPost({ files, caption }) {
     const formData = new FormData()
     formData.append("caption", caption)
     for (let i = 0; i < files.length; i++) {
-        formData.append("files", files[i])
+        formData.append("media", files[i])
     }
 
-    const response = await axios.post("http://localhost:3000/api/posts", formData, {withCredentials: true})
+    const response = await axios.post("http://localhost:3000/api/posts/create", formData, { withCredentials: true })
 
     return response.data
 }

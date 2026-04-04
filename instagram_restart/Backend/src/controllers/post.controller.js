@@ -3,7 +3,7 @@ import { uploadFile } from "../services/storage.services.js";
 
 export async function createPost(req, res) {
   try {
-    const author = req.user.id;
+    const author = req.user.id || req.user.userId || req.user._id;
     const { caption } = req.body;
 
     const files = req.files;
@@ -34,7 +34,7 @@ export async function createPost(req, res) {
     const post = await postModel.create({
       caption,
       author,
-      media:media.filter(m => m.media_type === "image" || m.media_type === "video")
+      media: media.filter(m => m.media_type === "image" || m.media_type === "video")
     });
 
     return res.status(201).json({
@@ -55,6 +55,7 @@ export async function createPost(req, res) {
 export const getAllPosts = async (req, res) => {
   try {
     const posts = await postModel.find()
+      .populate("author", "username profilePicture avatar location")
       .sort({ createdAt: -1 });
 
     res.json(posts);
@@ -78,7 +79,7 @@ export const getPostById = async (req, res) => {
   }
 };
 
-export const deletePost = async (req, res) => { 
+export const deletePost = async (req, res) => {
   try {
     const post = await postModel.findById(req.params.id);
 

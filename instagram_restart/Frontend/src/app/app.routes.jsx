@@ -1,15 +1,16 @@
 import React from 'react'
 import { createBrowserRouter } from 'react-router-dom'
-import Home from  '../features/posts/pages/Home'
+import Home from '../features/posts/pages/Home'
 import Login from '../features/auth/pages/Login'
-import Register from  '../features/auth/pages/Register' 
+import Register from '../features/auth/pages/Register'
 import Profile from "../features/posts/pages/Profile"
 import CreatePost from "../features/posts/pages/CreatePost"
 import AppLayout from "../components/layout/AppLayout"
+import Search from "../features/users/pages/Search"    
 
 export const router = createBrowserRouter([
     {
-        path: '/', 
+        path: '/',
         element: <AppLayout />,
         children: [
             {
@@ -23,15 +24,18 @@ export const router = createBrowserRouter([
             {
                 path: '/create',
                 element: <CreatePost />
+            },{
+                path: '/search',
+                element: <Search />
             }
         ]
     },
     {
-        path:'/login',
-        element:<Login />
+        path: '/login',
+        element: <Login />
     },
     {
-        path:'/register',
-        element:<Register />
+        path: '/register',
+        element: <Register />
     }
 ])

@@ -4,7 +4,7 @@ import styles from './Profile.module.scss'
 
 const Profile = () => {
     const user = useSelector((store) => store.auth.user)
-    
+
     return (
         <div className={styles.container}>
             <div className={styles.profileCard}>

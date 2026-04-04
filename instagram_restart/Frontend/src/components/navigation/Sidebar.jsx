@@ -1,39 +1,46 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { 
-  Home, 
-  Search, 
-  PlusSquare, 
-  Heart, 
-  MessageCircle, 
-  Compass,
-  PlaySquare,
-  Menu,
-  Grid
+import {
+    Home,
+    Search,
+    PlusSquare,
+    Heart,
+    MessageCircle,
+    Compass,
+    PlaySquare,
+    Menu,
+    Grid
 } from 'lucide-react';
 
 const InstagramIcon = ({ size = 28 }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-  >
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-  </svg>
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+    </svg>
 );
-import { useSelector } from 'react-redux';
+import { useLoggedInUser } from '../../features/auth/hooks/useLoggedInUser';
 import styles from './Sidebar.module.scss';
 
+/**
+ * Feature: Logged-in User Profile Display in Sidebar
+ * Ye component sidebar mein current user ka profile picture dikhata hai
+ * Agar profile picture nahi hai to dynamic avatar (username ke initials se) generate hota hai
+ * Ye sab hooks ke through dynamic hai, hard-coded nahi hai
+ */
 const Sidebar = () => {
-    const user = useSelector((store) => store.auth?.user);
+    // Logged-in user ka profile data fetch kar rahe hain custom hook se
+    const { profilePicture, username } = useLoggedInUser();
 
     // Arranged to perfectly match the sleek sidebar image provided
     const navItems = [
@@ -49,7 +56,7 @@ const Sidebar = () => {
 
     return (
         <>
-            {/* Desktop Sidebar (Slim, Icon-Only with Tooltips) */}
+            {/* Desktop Sidebar (Expandable on hover) */}
             <nav className={styles.desktopNav}>
                 <div className={styles.logoIcon}>
                     <InstagramIcon size={28} />
@@ -58,12 +65,12 @@ const Sidebar = () => {
                 <div className={styles.navItems}>
                     {navItems.map((item) => {
                         const Icon = item.icon;
-                        
+
                         return (
                             <NavLink
                                 key={item.name}
                                 to={item.path}
-                                className={({ isActive }) => 
+                                className={({ isActive }) =>
                                     `${styles.navLink} ${isActive ? styles.active : ''}`
                                 }
                             >
@@ -71,17 +78,17 @@ const Sidebar = () => {
                                     <>
                                         <div className={styles.iconWrapper}>
                                             {item.isProfile ? (
-                                                <div style={{
-                                                  width: '26px', height: '26px', borderRadius: '50%', 
-                                                  border: isActive ? '2px solid white' : '1px solid #444',
-                                                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                  overflow: 'hidden'
-                                                }}>
-                                                    {user?.profilePicture ? (
-                                                        <img src={user.profilePicture} alt="Profile" className={styles.profileImage} style={{width:'100%', height:'100%', objectFit:'cover'}} />
-                                                    ) : (
-                                                        <span style={{fontSize: '10px'}}>{user?.username?.[0]?.toUpperCase() || 'U'}</span>
-                                                    )}
+                                                <div className={`${styles.profilePicContainer} ${isActive ? styles.active : ''}`}>
+                                                    {/* 
+                                                        Profile Picture Display
+                                                        Agar user ke pass proper profile picture hai to vo show hota hai
+                                                        Nahi to default avatar ui-avatars.com se generate hota hai
+                                                    */}
+                                                    <img 
+                                                        src={profilePicture} 
+                                                        alt={username} 
+                                                        className={styles.profileImage} 
+                                                    />
                                                 </div>
                                             ) : (
                                                 <Icon strokeWidth={isActive ? 2.5 : 1.5} size={26} />
@@ -90,9 +97,7 @@ const Sidebar = () => {
                                                 <span className={styles.badge}>{item.badge}</span>
                                             )}
                                         </div>
-                                        <span className={styles.tooltip}>
-                                            {item.name}
-                                        </span>
+                                        <span className={styles.navText}>{item.name}</span>
                                     </>
                                 )}
                             </NavLink>
@@ -105,13 +110,13 @@ const Sidebar = () => {
                         <div className={styles.iconWrapper}>
                             <Menu strokeWidth={1.5} size={26} />
                         </div>
-                        <span className={styles.tooltip}>More</span>
+                        <span className={styles.navText}>More</span>
                     </button>
                     <button className={styles.navLink}>
                         <div className={styles.iconWrapper}>
                             <Grid strokeWidth={1.5} size={26} />
                         </div>
-                        <span className={styles.tooltip}>Threads</span>
+                        <span className={styles.navText}>Threads</span>
                     </button>
                 </div>
             </nav>
@@ -124,23 +129,22 @@ const Sidebar = () => {
                         <NavLink
                             key={item.name}
                             to={item.path}
-                            className={({ isActive }) => 
+                            className={({ isActive }) =>
                                 `${styles.mobileLink} ${isActive ? styles.active : ''}`
                             }
                         >
                             {({ isActive }) => (
                                 item.isProfile ? (
-                                    <div style={{
-                                        width: '26px', height: '26px', borderRadius: '50%', 
-                                        border: isActive ? '2px solid white' : '1px solid #444',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        overflow: 'hidden'
-                                    }}>
-                                        {user?.profilePicture ? (
-                                            <img src={user.profilePicture} alt="Profile" style={{width:'100%', height:'100%', objectFit:'cover'}} />
-                                        ) : (
-                                            <span style={{fontSize: '10px'}}>{user?.username?.[0]?.toUpperCase() || 'U'}</span>
-                                        )}
+                                    <div className={`${styles.profilePicContainer} ${isActive ? styles.active : ''}`}>
+                                        {/* 
+                                            Mobile Profile Picture Display
+                                            Mobile view ke liye bhi same dynamic profile picture show hota hai
+                                        */}
+                                        <img 
+                                            src={profilePicture} 
+                                            alt={username} 
+                                            className={styles.profileImage} 
+                                        />
                                     </div>
                                 ) : (
                                     <Icon strokeWidth={isActive ? 2.5 : 1.5} size={26} />

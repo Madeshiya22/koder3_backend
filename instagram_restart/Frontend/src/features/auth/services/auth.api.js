@@ -22,13 +22,12 @@ export async function register({ username, fullname, email, password }) {
   }
 }
 
-export async function login({ username, email, password }) {
+export async function login({ usernameOrEmail, password }) {
   try {
     const response = await axios.post(
       "http://localhost:3000/api/auth/login",
       {
-        username,
-        email,
+        usernameOrEmail,
         password,
       },
       { withCredentials: true },

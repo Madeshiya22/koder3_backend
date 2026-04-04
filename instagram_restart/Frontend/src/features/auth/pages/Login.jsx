@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from '../pages/Login.module.scss';
+import  useAuth  from '../hooks/useAuth';
 
 const Login = () => {
+
+  const { handleLogin } = useAuth();
+
   const [formData, setFormData] = useState({
-    email: '',
+    usernameOrEmail: '',
     password: ''
   });
 
@@ -17,6 +21,7 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    handleLogin(formData);
     console.log('Logging in with', formData);
   };
 
@@ -54,10 +59,10 @@ const Login = () => {
             <div className={styles.inputGroup}>
               <label>Email</label>
               <input
-                type="email"
-                name="email"
+                type="text"
+                name="usernameOrEmail"
                 placeholder="info.johndoe@gmail.com"
-                value={formData.email}
+                value={formData.usernameOrEmail}
                 onChange={handleChange}
                 className={styles.input}
                 required

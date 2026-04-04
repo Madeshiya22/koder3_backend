@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ImagePlus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { usePost } from '../hooks/usePost';
 import styles from './CreatePost.module.scss';
 
 const CreatePost = () => {
+    const navigate = useNavigate();
+    const { handleCreatePost } = usePost();
+    const fileInputRef = useRef(null);
+
     const [dragActive, setDragActive] = useState(false);
     const [caption, setCaption] = useState('');
 
@@ -21,7 +27,7 @@ const CreatePost = () => {
         e.stopPropagation();
         setDragActive(false);
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            // handle file
+            fileInputRef.current = e.dataTransfer.files;
             console.log("Files dropped", e.dataTransfer.files);
         }
     };
@@ -79,6 +85,7 @@ const CreatePost = () => {
                               type="file" 
                               accept="image/*,video/*" 
                               multiple 
+                              onChange={handleFileChange}
                             />
                         </label>
                     </div>
@@ -88,8 +95,8 @@ const CreatePost = () => {
                 <div className={styles.detailsArea}>
                     <div className={styles.header}>
                         <h2>Create new post</h2>
-                        <button className={styles.shareBtn}>
-                            Share
+                        <button className={styles.shareBtn} onClick={handleShare}>
+                            Post
                         </button>
                     </div>
 
