@@ -6,20 +6,71 @@ import followModel from "../models/follow.model.js";
  */
 
 export const searchUser = async (req, res) => {
-    try {
-        const { q } = req.query;
+    const { q } = req.query;
 
-        if (!q) {
-            return res.status(200).json([]);
-        }
-
-        const users = await userModel.aggregate([
+    const users = await userModel.aggregate(
+        [
             {
                 $search: {
-                    index: "default",
+                    index: 'user_search_feature',
                     autocomplete: {
                         query: q,
-                        path: "username",
+                        path: 'username'
+                    }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'follows',
+                    as: 'followDoc',
+                    let: { searchUser: '$_id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        {
+                                            $eq: [
+                                                '$followee',
+                                                '$$searchUser'
+                                            ]
+                                        },
+                                        {
+                                            $eq: [ '$follower', new mongoose.Types.ObjectId(req.user.id) ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                $addFields: {
+                    followStatus: {
+                        $cond: {
+                            if: {
+                                $eq: [ { $size: '$followDoc' }, 0 ]
+                            },
+                            then: 'not-following',
+                            else: {
+                                $cond: {
+                                    if: {
+                                        $eq: [
+                                            {
+                                                $arrayElemAt: [
+                                                    '$followDoc.status',
+                                                    0
+                                                ]
+                                            },
+                                            'pending'
+                                        ]
+                                    },
+                                    then: 'requested',
+                                    else: 'following'
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -28,21 +79,16 @@ export const searchUser = async (req, res) => {
                     username: 1,
                     fullname: 1,
                     profilePicture: 1,
-                    score: { $meta: "searchScore" }
+                    followStatus: 1
                 }
             }
-        ]);
+        ])
 
-        res.status(200).json(users);
-    } catch (error) {
-        console.error("Search Error:", error);
-        res.status(500).json({
-            message: "Users fetch failed",
-            error: error.message
-        });
-    }
+    res.status(200).json({
+        message: "Users fetched successfully",
+        users
+    })
 }
-
 
 export const followUser = async (req, res) => {
     try {

@@ -69,5 +69,3 @@ export const loginValidation = [
     
     validate,
 ];
-
-export const 
