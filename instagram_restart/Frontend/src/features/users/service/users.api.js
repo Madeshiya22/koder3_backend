@@ -11,7 +11,7 @@ export async function searchUser({ query }) {
 
 export async function followUser({ userId }) {
 
-    const response = await axios.post("http://localhost:3000/api/users/follow/" + userId, {}, {
+    const response = await axios.post("http://localhost:3000/api/users/follow/" + userId,{}, {
         withCredentials: true
     })
 

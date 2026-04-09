@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import {config} from "../config/config.js";
+import { config } from "../config/config.js";
 
 export function authUser(req, res, next) {
   const token = req.cookies.token;
@@ -8,7 +8,7 @@ export function authUser(req, res, next) {
     return res.status(401).json({
       message: "Access denied",
       success: "false",
-    }); 
+    });
   }
 
   try {
@@ -16,9 +16,9 @@ export function authUser(req, res, next) {
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ 
-      message: "Invalid token", 
-      success: "false" 
+    return res.status(401).json({
+      message: "Invalid token",
+      success: "false"
     });
   }
 }

@@ -5,14 +5,15 @@ import { useSelector } from 'react-redux'
 import styles from './SearchUserTile.module.scss'
 
 const SearchUserTile = ({ user }) => {
-
+    console.log(user)
     const navigate = useNavigate()
     const { handleFollowUser } = useUser()
     const requested = useSelector(state => state.user.requested)
+    const currentUser = useSelector(state => state.auth.user)
 
-    const handleFollowClick = async (e) => {
+    const handleFollowClick = async (e, userId) => {
         e.stopPropagation()
-        await handleFollowUser({ userId: user._id })
+        await handleFollowUser({ userId })
     }
 
     const handleUserClick = () => {
@@ -40,11 +41,11 @@ const SearchUserTile = ({ user }) => {
                 </div>
             </div>
 
-            <button 
-                onClick={handleFollowClick}
+            {user.username !== currentUser.username ? (<button 
+                onClick={(e) => handleFollowClick(e, user._id)}
                 className={styles.followButton}>
                   {requested.includes(user._id) || user.followStatus == "requested" ? "requested" : (user.followStatus == "following" ? "following" : "follow")}
-            </button>
+            </button>) : null}
         </div>
     )
 }

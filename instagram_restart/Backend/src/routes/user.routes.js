@@ -9,7 +9,7 @@ router.get("/search", authUser, searchUser)
 
 router.get("/profile/:userId", authUser, getProfile)
 
-router.post("/follow/:userId", authUser, validateFollowUser, followUser)
+router.post("/follow/:userId", authUser,  followUser)
 
 router.get("/follow-requests", authUser, getFollowRequests)
 
