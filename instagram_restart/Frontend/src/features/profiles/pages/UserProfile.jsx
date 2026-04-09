@@ -1,47 +1,51 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { LogOut, Edit, MessageCircle, Share, Grid3x3, Video, Bookmark, Tag, MoreHorizontal } from 'lucide-react'
-import styles from './Profile.module.scss'
-import { setUser } from '../../auth/auth.slice'
-import { getUserProfileData, getUserPosts, getUserVideos, getBookmarkedPosts } from '../../profiles/services/profile.api'
-import PostGrid from '../../profiles/components/PostGrid'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { Grid3x3, Video, Bookmark, Tag, MoreHorizontal, User, UserCheck, UserPlus } from 'lucide-react'
+import styles from './UserProfile.module.scss'
+import { getUserProfileData, getUserPosts, getUserVideos, getBookmarkedPosts } from '../services/profile.api'
+import { followUser } from '../../users/service/users.api'
+import ProfileSkeleton from '../components/ProfileSkeleton'
+import PostGrid from '../components/PostGrid'
 
-const Profile = () => {
-    const user = useSelector((store) => store.auth.user)
-    const dispatch = useDispatch()
+const UserProfile = () => {
+    const { userId } = useParams()
     const navigate = useNavigate()
+    const currentUser = useSelector((store) => store.auth.user)
+    
     const [profileData, setProfileData] = useState(null)
     const [posts, setPosts] = useState([])
     const [videos, setVideos] = useState([])
     const [bookmarks, setBookmarks] = useState([])
-    const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState('posts')
+    const [loading, setLoading] = useState(true)
+    const [following, setFollowing] = useState(false)
+    const [postsPage, setPostsPage] = useState(1)
+    const [videosPage, setVideosPage] = useState(1)
+    const [bookmarksPage, setBookmarksPage] = useState(1)
 
+    // Fetch profile data
     useEffect(() => {
-        if (user?._id) {
-            fetchProfileData()
-        }
-    }, [user?._id])
+        fetchProfileData()
+    }, [userId])
 
-    // Fetch different content based on active tab
+    // Fetch posts when tab changes
     useEffect(() => {
-        if (!user?._id) return
-        
         if (activeTab === 'posts') {
             fetchPosts()
         } else if (activeTab === 'videos') {
             fetchVideos()
-        } else if (activeTab === 'bookmarks') {
+        } else if (activeTab === 'bookmarks' && currentUser?._id === userId) {
             fetchBookmarks()
         }
-    }, [activeTab, user?._id])
+    }, [activeTab, userId])
 
     const fetchProfileData = async () => {
         try {
             setLoading(true)
-            const data = await getUserProfileData({ userId: user._id })
+            const data = await getUserProfileData({ userId })
             setProfileData(data)
+            setFollowing(data.followStatus === 'accepted' || data.followStatus === 'pending')
         } catch (error) {
             console.error('Error fetching profile:', error)
         } finally {
@@ -51,8 +55,8 @@ const Profile = () => {
 
     const fetchPosts = async () => {
         try {
-            const data = await getUserPosts({ userId: user._id, page: 1 })
-            setPosts(data.posts || [])
+            const data = await getUserPosts({ userId, page: postsPage })
+            setPosts(data.posts)
         } catch (error) {
             console.error('Error fetching posts:', error)
             setPosts([])
@@ -61,8 +65,8 @@ const Profile = () => {
 
     const fetchVideos = async () => {
         try {
-            const data = await getUserVideos({ userId: user._id, page: 1 })
-            setVideos(data.posts || [])
+            const data = await getUserVideos({ userId, page: videosPage })
+            setVideos(data.posts)
         } catch (error) {
             console.error('Error fetching videos:', error)
             setVideos([])
@@ -71,39 +75,51 @@ const Profile = () => {
 
     const fetchBookmarks = async () => {
         try {
-            const data = await getBookmarkedPosts({ page: 1 })
-            setBookmarks(data.posts || [])
+            const data = await getBookmarkedPosts({ page: bookmarksPage })
+            setBookmarks(data.posts)
         } catch (error) {
             console.error('Error fetching bookmarks:', error)
             setBookmarks([])
         }
     }
 
+    const handleFollowClick = async () => {
+        try {
+            await followUser({ userId })
+            setFollowing(!following)
+            fetchProfileData()
+        } catch (error) {
+            console.error('Error toggling follow:', error)
+        }
+    }
+
+    const isOwnProfile = currentUser?._id === userId
+    const isFollowing = following
+
+    if (loading) {
+        return <ProfileSkeleton />
+    }
+
+    if (!profileData) {
+        return (
+            <div className={styles.profileContainer}>
+                <div className={styles.emptyState}>
+                    <p>User not found</p>
+                </div>
+            </div>
+        )
+    }
+
     const getInitials = () => {
-        if (user?.fullname) {
-            return user.fullname
+        if (profileData?.fullname) {
+            return profileData.fullname
                 .split(' ')
                 .map(n => n.charAt(0))
                 .join('')
                 .toUpperCase()
                 .slice(0, 2)
         }
-        return user?.username?.charAt(0).toUpperCase() || 'U'
-    }
-
-    const handleLogout = () => {
-        dispatch(setUser(null))
-        navigate('/login')
-    }
-
-    if (!user) {
-        return (
-            <div className={styles.profileContainer}>
-                <div className={styles.emptyState}>
-                    <p>Please log in to view your profile</p>
-                </div>
-            </div>
-        )
+        return profileData?.username?.charAt(0).toUpperCase() || 'U'
     }
 
     return (
@@ -113,10 +129,10 @@ const Profile = () => {
                 {/* Avatar */}
                 <div className={styles.avatarSection}>
                     <div className={styles.avatarLarge}>
-                        {user?.profilePicture ? (
+                        {profileData?.profilePicture ? (
                             <img 
-                                src={user.profilePicture} 
-                                alt={user.username}
+                                src={profileData.profilePicture} 
+                                alt={profileData.username}
                                 className={styles.avatarImage}
                             />
                         ) : (
@@ -128,13 +144,13 @@ const Profile = () => {
                 {/* User Info */}
                 <div className={styles.userInfoSection}>
                     <div className={styles.usernameRow}>
-                        <h1 className={styles.username}>{user?.username}</h1>
+                        <h1 className={styles.username}>{profileData?.username}</h1>
                         <button className={styles.moreBtn} title="More options">
                             <MoreHorizontal size={24} />
                         </button>
                     </div>
 
-                    {/* Stats in one line */}
+                    {/* Stats */}
                     <div className={styles.statsLine}>
                         <span><strong>{profileData?.posts || 0}</strong> posts</span>
                         <span><strong>{profileData?.followers || 0}</strong> followers</span>
@@ -143,18 +159,42 @@ const Profile = () => {
 
                     {/* Name and Bio */}
                     <div className={styles.bioSection}>
-                        <p className={styles.fullname}>{user?.fullname || 'User'}</p>
-                        <p className={styles.bio}>Enjoy every moment of life</p>
+                        <p className={styles.fullname}>{profileData?.fullname}</p>
+                        {profileData?.bio && <p className={styles.bio}>{profileData.bio}</p>}
                     </div>
 
                     {/* Action Buttons */}
                     <div className={styles.actionButtons}>
-                        <button className={styles.editBtn}>
-                            Edit profile
-                        </button>
-                        <button className={styles.viewArchiveBtn}>
-                            View archive
-                        </button>
+                        {isOwnProfile ? (
+                            <>
+                                <button className={styles.editBtn}>
+                                    Edit profile
+                                </button>
+                                <button className={styles.viewArchiveBtn}>
+                                    View archive
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <button 
+                                    className={`${styles.followBtn} ${isFollowing ? styles.following : ''}`}
+                                    onClick={handleFollowClick}
+                                >
+                                    {isFollowing ? (
+                                        <>
+                                            <UserCheck size={16} /> Following
+                                        </>
+                                    ) : (
+                                        <>
+                                            <UserPlus size={16} /> Follow
+                                        </>
+                                    )}
+                                </button>
+                                <button className={styles.messageBtn}>
+                                    Message
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
@@ -185,13 +225,15 @@ const Profile = () => {
                 >
                     <Video size={20} />
                 </button>
-                <button 
-                    className={`${styles.tabButton} ${activeTab === 'bookmarks' ? styles.active : ''}`}
-                    onClick={() => setActiveTab('bookmarks')}
-                    title="Bookmarks"
-                >
-                    <Bookmark size={20} />
-                </button>
+                {isOwnProfile && (
+                    <button 
+                        className={`${styles.tabButton} ${activeTab === 'bookmarks' ? styles.active : ''}`}
+                        onClick={() => setActiveTab('bookmarks')}
+                        title="Bookmarks"
+                    >
+                        <Bookmark size={20} />
+                    </button>
+                )}
                 <button 
                     className={`${styles.tabButton} ${activeTab === 'tagged' ? styles.active : ''}`}
                     onClick={() => setActiveTab('tagged')}
@@ -201,7 +243,7 @@ const Profile = () => {
                 </button>
             </div>
 
-            {/* Content Grid based on active tab */}
+            {/* Content Grid */}
             <PostGrid 
                 posts={
                     activeTab === 'posts' ? posts : 
@@ -215,4 +257,4 @@ const Profile = () => {
     )
 }
 
-export default Profile
+export default UserProfile

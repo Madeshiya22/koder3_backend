@@ -8,6 +8,14 @@ export async function getPosts() {
     return response.data
 }
 
+export async function getUserPosts() {
+    const response = await axios.get("http://localhost:3000/api/posts/user/me", {
+        withCredentials: true
+    })
+
+    return response.data
+}
+
 export async function createPost({ files, caption }) {
 
     const formData = new FormData()

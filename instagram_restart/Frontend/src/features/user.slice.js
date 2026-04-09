@@ -6,13 +6,13 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
-
 const userSlice = createSlice({
     name: "user",
     initialState: {
         followers: [],
         following: [],
-        requested: []
+        requested: [],
+        followRequests: []
     },
     reducers: {
         setFollowers: (state, action) => {
@@ -25,15 +25,22 @@ const userSlice = createSlice({
             state.requested = action.payload
         },
         appendRequest: (state, action) => {
-            state.requested = [ ...state.requested, action.payload ]
+            state.requested = [...state.requested, action.payload]
+        },
+        setFollowRequest: (state, action) => {
+            state.followRequests = action.payload
+        },
+        acceptFollowRequestState: (state, action) => {
+            const requestId = action.payload
+            state.followRequests = state.followRequests.map(request => {
+                if (request._id === requestId) {
+                    return { ...request, status: 'accepted' }
+                }
+                return request
+            })
         }
-
     }
 })
 
-/**
- * [user-a,user-b]
- */
-
-export const { setFollowers, setFollowing, setRequested, appendRequest } = userSlice.actions
+export const { setFollowers, setFollowing, setRequested, appendRequest, setFollowRequest, acceptFollowRequestState } = userSlice.actions
 export default userSlice.reducer

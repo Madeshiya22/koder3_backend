@@ -1,144 +1,199 @@
 import userModel from "../models/user.models.js";
 import followModel from "../models/follow.model.js";
+import mongoose from "mongoose";
 
 /**
  * GET /api/users/search?q=abhi
  */
-
 export const searchUser = async (req, res) => {
-    const { q } = req.query;
+    try {
+        const { q } = req.query;
 
-    const users = await userModel.aggregate(
-        [
-            {
-                $search: {
-                    index: 'user_search_feature',
-                    autocomplete: {
-                        query: q,
-                        path: 'username'
-                    }
-                }
-            },
-            {
-                $lookup: {
-                    from: 'follows',
-                    as: 'followDoc',
-                    let: { searchUser: '$_id' },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $and: [
-                                        {
-                                            $eq: [
-                                                '$followee',
-                                                '$$searchUser'
-                                            ]
-                                        },
-                                        {
-                                            $eq: [ '$follower', new mongoose.Types.ObjectId(req.user.id) ]
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            {
-                $addFields: {
-                    followStatus: {
-                        $cond: {
-                            if: {
-                                $eq: [ { $size: '$followDoc' }, 0 ]
-                            },
-                            then: 'not-following',
-                            else: {
-                                $cond: {
-                                    if: {
-                                        $eq: [
-                                            {
-                                                $arrayElemAt: [
-                                                    '$followDoc.status',
-                                                    0
-                                                ]
-                                            },
-                                            'pending'
-                                        ]
-                                    },
-                                    then: 'requested',
-                                    else: 'following'
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            {
-                $project: {
-                    username: 1,
-                    fullname: 1,
-                    profilePicture: 1,
-                    followStatus: 1
-                }
-            }
-        ])
+        if (!q) {
+            return res.status(400).json({
+                message: "Search query is required",
+                users: []
+            })
+        }
 
-    res.status(200).json({
-        message: "Users fetched successfully",
-        users
-    })
+        // Simple regex search instead of MongoDB Atlas $search
+        const users = await userModel.find({
+            $or: [
+                { username: { $regex: q, $options: 'i' } },
+                { fullname: { $regex: q, $options: 'i' } }
+            ]
+        }).select('username fullname profilePicture _id').limit(10);
+
+        // If user is authenticated, add follow status
+        let usersWithStatus = users;
+        if (req.user) {
+            usersWithStatus = await Promise.all(
+                users.map(async (user) => {
+                    const followDoc = await followModel.findOne({
+                        follower: req.user.id,
+                        followee: user._id
+                    });
+
+                    let followStatus = 'not-following';
+                    if (followDoc) {
+                        followStatus = followDoc.status === 'pending' ? 'requested' : 'following';
+                    }
+
+                    return {
+                        _id: user._id,
+                        username: user.username,
+                        fullname: user.fullname,
+                        profilePicture: user.profilePicture,
+                        followStatus
+                    };
+                })
+            );
+        }
+
+        res.status(200).json({
+            message: "Users fetched successfully",
+            users: usersWithStatus
+        })
+    } catch (error) {
+        console.error("Search error:", error);
+        res.status(500).json({
+            message: "Error searching users",
+            error: error.message,
+            users: []
+        })
+    }
 }
 
 export const followUser = async (req, res) => {
+    const { userId } = req.params;
+    const currentUserId = req.user.id;
+
+    const isUserExist = await userModel.findById(userId);
+
+    if (!isUserExist) {
+        return res.status(404).json({
+            message: "User not found",
+            success: false,
+        })
+    }
+
+    if (userId === currentUserId) {
+        return res.status(400).json({
+            message: "You cannot follow yourself",
+            success: false,
+        })
+    }
+
+    const alreadyFollowing = await followModel.findOne({
+        follower: currentUserId,
+        followee: userId
+    })
+
+    if (alreadyFollowing) {
+        return res.status(400).json({
+            message: "You are already following this user",
+            success: false,
+        })
+    }
+
+    const follow = await followModel.create({
+        follower: currentUserId,
+        followee: userId,
+    })
+
+    return res.status(200).json({
+        message: "Follow request sent successfully",
+        success: true,
+        follow
+    })
+}
+
+export const getFollowRequests = async (req, res) => {
+    const loggedInUserId = req.user.id
+
+    const requests = await followModel.find({
+        followee: loggedInUserId,
+        status: "pending"
+    }).populate("follower", "username profilePicture")
+
+    return res.status(200).json({
+        message: "Follow requests fetched successfully",
+        success: true,
+        requests
+    })
+}
+
+export const acceptFollowRequest = async (req, res) => {
+    const { requestId } = req.params;
+    const loggedInUserId = req.user.id
+
+    const followRequest = await followModel.findOne({
+        _id: requestId,
+        status: "pending",
+        followee: loggedInUserId
+    })
+
+    if (!followRequest) {
+        return res.status(404).json({
+            message: "Follow request not found",
+            success: false,
+        })
+    }
+
+    followRequest.status = "accepted"
+    await followRequest.save()
+
+    return res.status(200).json({
+        message: "Follow request accepted successfully",
+        success: true,
+    })
+}
+
+export const getProfile = async (req, res) => {
     try {
-        const { userId } = req.params;
-        const currentUserId = req.user._id;
+        const userId = req.params.userId || req.user.userId;
 
-        const isUserExist = await userModel.findById(userId);
+        const user = await userModel.findById(userId);
 
-        if (!isUserExist) {
+        if (!user) {
             return res.status(404).json({
                 message: "User not found",
                 success: false,
-            })
+            });
         }
 
-        if (userId === currentUserId.toString()) {
-            return res.status(400).json({
-                message: "You cannot follow yourself",
-                success: false,
-            })
-        }
-
-        const alreadyFollowing = await followModel.findOne({
-            follower: currentUserId,
-            followee: userId
-        })
-
-        if (alreadyFollowing) {
-            return res.status(400).json({
-                message: "You are already following this user",
-                success: false,
-            })
-        }
-
-        const follow = await followModel.create({
-            follower: currentUserId,
+        // Count followers
+        const followersCount = await followModel.countDocuments({
             followee: userId,
-        })
+            status: "accepted"
+        });
 
+        // Count following
+        const followingCount = await followModel.countDocuments({
+            follower: userId,
+            status: "accepted"
+        });
+
+        
         return res.status(200).json({
-            message: "Follow request sent successfully",
+            message: "Profile fetched successfully",
             success: true,
-            follow
-        })
+            user: {
+                _id: user._id,
+                username: user.username,
+                fullname: user.fullname,
+                email: user.email,
+                profilePicture: user.profilePicture,
+                followers: followersCount,
+                following: followingCount,
+            }
+        });
     } catch (error) {
-        console.error("Follow Error:", error);
-        res.status(500).json({
-            message: "Failed to follow user",
-            error: error.message,
-            success: false
+        console.error("Profile fetch error:", error);
+        return res.status(500).json({
+            message: "Error fetching profile",
+            success: false,
+            error: error.message
         });
     }
 }

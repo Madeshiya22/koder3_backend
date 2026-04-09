@@ -30,7 +30,12 @@ export const register = async (req, res) => {
       expiresIn: "1h",
     });
 
-    res.cookie("token", token);
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+    });
 
     return res.status(201).json({
       message: "User registered successfully",
@@ -96,7 +101,12 @@ export const login = async (req, res) => {
     expiresIn: "7d",
   });
 
-  res.cookie("token", token);
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    path: "/",
+  });
 
   res.status(200).json({
     message: "User logged in successfully",
@@ -105,12 +115,13 @@ export const login = async (req, res) => {
       _id: existingUser._id,
       username: existingUser.username,
       email: existingUser.email,
+      fullname: existingUser.fullname,
     },
   });
 };
 
 export const getMe = async (req, res) => {
-  const user = await usermodel.findById(req.user._id);
+  const user = await usermodel.findById(req.user.id || req.user.userId || req.user._id);
 
   if (!user) {
     return res
@@ -125,6 +136,7 @@ export const getMe = async (req, res) => {
       _id: user._id,
       username: user.username,
       email: user.email,
+      fullname: user.fullname,
     },
   });
 };

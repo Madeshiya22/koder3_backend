@@ -1,0 +1,329 @@
+.profileContainer {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    min-height: 100vh;
+}
+
+.profileHeader {
+    display: flex;
+    gap: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid #dbdbdb;
+    
+    @media (max-width: 600px) {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 20px;
+    }
+}
+
+.avatarSection {
+    flex-shrink: 0;
+    
+    @media (max-width: 600px) {
+        display: flex;
+        justify-content: center;
+    }
+}
+
+.avatarLarge {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    
+    @media (max-width: 600px) {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+.avatarImage {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #f0f0f0;
+}
+
+.initials {
+    font-size: 48px;
+    font-weight: 600;
+    color: #fff;
+    
+    @media (max-width: 600px) {
+        font-size: 36px;
+    }
+}
+
+.userInfoSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 15px;
+}
+
+.usernameRow {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 5px;
+}
+
+.username {
+    font-size: 32px;
+    font-weight: 300;
+    margin: 0;
+    
+    @media (max-width: 600px) {
+        font-size: 24px;
+    }
+}
+
+.moreBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #262626;
+    transition: opacity 0.2s;
+    
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.statsLine {
+    display: flex;
+    gap: 40px;
+    font-size: 16px;
+    
+    @media (max-width: 600px) {
+        gap: 15px;
+        font-size: 14px;
+        justify-content: space-around;
+        width: 100%;
+    }
+    
+    span {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        
+        strong {
+            font-weight: 600;
+        }
+    }
+}
+
+.bioSection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fullname {
+    font-weight: 600;
+    margin: 0;
+    color: #262626;
+    font-size: 15px;
+}
+
+.bio {
+    margin: 0;
+    color: #262626;
+    font-size: 15px;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    
+    @media (max-width: 600px) {
+        width: 100%;
+        
+        button {
+            flex: 1;
+        }
+    }
+}
+
+.editBtn,
+.viewArchiveBtn,
+.followBtn,
+.messageBtn {
+    padding: 8px 24px;
+    border: 1px solid #dbdbdb;
+    background: #fff;
+    color: #262626;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    
+    &:hover {
+        background: #fafafa;
+        border-color: #262626;
+    }
+}
+
+.editBtn,
+.followBtn:not(.following) {
+    background: #0095f6;
+    color: #fff;
+    border-color: #0095f6;
+    
+    &:hover {
+        background: #1877f2;
+        border-color: #1877f2;
+    }
+}
+
+.followBtn.following {
+    background: #fff;
+    border: 1px solid #dbdbdb;
+    
+    &:hover {
+        background: #fafafa;
+    }
+}
+
+.messageBtn {
+    @media (max-width: 600px) {
+        display: none;
+    }
+}
+
+.highlightsSection {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 15px 0;
+    
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.highlight {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.highlightImage {
+    width: 77px;
+    height: 77px;
+    border-radius: 50%;
+    border: 2px solid #dbdbdb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    
+    &:hover {
+        border-color: #262626;
+    }
+}
+
+.highlightLabel {
+    font-size: 28px;
+    color: #fff;
+    font-weight: 300;
+}
+
+.highlightName {
+    font-size: 12px;
+    color: #262626;
+    text-align: center;
+    max-width: 77px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tabsSection {
+    display: flex;
+    border-top: 1px solid #dbdbdb;
+    margin-top: 40px;
+    justify-content: center;
+}
+
+.tabButton {
+    flex: 0 0 auto;
+    padding: 16px 40px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #8e8e8e;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    transition: color 0.2s;
+    
+    &:hover {
+        color: #262626;
+    }
+    
+    &.active {
+        color: #262626;
+        
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #262626;
+        }
+    }
+    
+    @media (max-width: 600px) {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: #8e8e8e;
+    
+    p {
+        font-size: 18px;
+        margin: 0;
+    }
+}

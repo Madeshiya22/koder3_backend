@@ -27,6 +27,10 @@ const userSchema = new mongooose.Schema({
         unique: true,
         sparse: true,
     },
+    profilePicture: {  
+            type:String,
+            default:"https://ik.imagekit.io/tsxqf16xv/default%20iage.jpg?updatedAt=1773987137370"
+    },
 });
 
 

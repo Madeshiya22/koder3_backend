@@ -122,6 +122,27 @@
   color: #5a6061;
 }
 
+.noResults {
+  text-align: center;
+  padding: 2.5rem 0;
+  color: #5a6061;
+  font-size: 15px;
+}
+
+.emptyIcon {
+  color: #9c9d9d;
+  margin-bottom: 1rem;
+  stroke-width: 1;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.emptyText {
+  color: #5a6061;
+  font-size: 15px;
+}
+
 .userCard {
   display: flex;
   align-items: center;

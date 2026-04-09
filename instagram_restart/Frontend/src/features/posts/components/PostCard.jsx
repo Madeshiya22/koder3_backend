@@ -1,15 +1,35 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from './PostCard.module.scss';
 import VideoPlayer from './VideoPlayer';
 import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal } from 'lucide-react';
+import { likePost, unlikePost } from '../services/like.api';
+import { bookmarkPost, removeBookmark, isPostBookmarked } from '../../profiles/services/profile.api';
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post, onLikeChange }) => {
   // Array fallback if simple mediaUrl string is provided instead of media array
   const mediaArray = post.media || (post.mediaUrl ? [{ _id: '1', url: post.mediaUrl, media_type: 'image' }] : []);
 
   // Simple state to track active carousel slide for indicators
   const [activeSlide, setActiveSlide] = useState(0);
   const scrollRef = useRef(null);
+  const [likeCount, setLikeCount] = useState(post.likeCount || 0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
+
+  // Check if post is bookmarked on mount
+  useEffect(() => {
+    const checkBookmarkStatus = async () => {
+      try {
+        const result = await isPostBookmarked(post._id);
+        setIsBookmarked(result);
+      } catch (error) {
+        console.error('Error checking bookmark status:', error);
+      }
+    };
+    checkBookmarkStatus();
+  }, [post._id]);
 
   const handleScroll = (e) => {
     if (!scrollRef.current) return;
@@ -19,6 +39,45 @@ const PostCard = ({ post }) => {
     const currentIndex = Math.round(scrollPosition / slideWidth);
     if (currentIndex !== activeSlide) {
       setActiveSlide(currentIndex);
+    }
+  };
+
+  const handleLikeToggle = async () => {
+    try {
+      setIsLoading(true);
+      if (isLiked) {
+        await unlikePost(post._id);
+        setIsLiked(false);
+        setLikeCount(prev => prev - 1);
+      } else {
+        await likePost(post._id);
+        setIsLiked(true);
+        setLikeCount(prev => prev + 1);
+      }
+      if (onLikeChange) {
+        onLikeChange();
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBookmarkToggle = async () => {
+    try {
+      setBookmarkLoading(true);
+      if (isBookmarked) {
+        await removeBookmark(post._id);
+        setIsBookmarked(false);
+      } else {
+        await bookmarkPost(post._id);
+        setIsBookmarked(true);
+      }
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
+    } finally {
+      setBookmarkLoading(false);
     }
   };
 
@@ -72,8 +131,18 @@ const PostCard = ({ post }) => {
       {/* Actions */}
       <div className={styles.actions}>
         <div className={styles.leftActions}>
-          <button aria-label="Like" className={styles.likeHover}>
-            <Heart size={26} strokeWidth={1.5} />
+          <button 
+            aria-label="Like" 
+            className={styles.likeHover}
+            onClick={handleLikeToggle}
+            disabled={isLoading}
+          >
+            <Heart 
+              size={26} 
+              strokeWidth={1.5} 
+              fill={isLiked ? "currentColor" : "none"}
+              style={{ color: isLiked ? "#ed4956" : "currentColor" }}
+            />
           </button>
           <button aria-label="Comment">
             <MessageCircle size={26} strokeWidth={1.5} />
@@ -96,15 +165,24 @@ const PostCard = ({ post }) => {
         )}
 
         <div className={styles.rightActions}>
-          <button aria-label="Save">
-            <Bookmark size={26} strokeWidth={1.5} />
+          <button 
+            aria-label="Save"
+            onClick={handleBookmarkToggle}
+            disabled={bookmarkLoading}
+          >
+            <Bookmark 
+              size={26} 
+              strokeWidth={1.5}
+              fill={isBookmarked ? "currentColor" : "none"}
+              style={{ color: isBookmarked ? "#262626" : "currentColor" }}
+            />
           </button>
         </div>
       </div>
 
       {/* Likes */}
       <div className={styles.likes}>
-        {(post.likes || 0).toLocaleString()} likes
+        {likeCount.toLocaleString()} likes
       </div>
 
       {/* Caption */}

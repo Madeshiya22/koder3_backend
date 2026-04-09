@@ -1,0 +1,168 @@
+.container {
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.title {
+  font-size: 1.75rem;
+  
+  @media (min-width: 768px) {
+    font-size: 2.75rem;
+  }
+  
+  font-weight: 600;
+  color: #2d3435;
+  margin-bottom: 2rem;
+  letter-spacing: -0.025em;
+}
+
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #2d3435;
+  margin-bottom: 1rem;
+}
+
+.requestsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.requestCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: #ffffff;
+  transition: background-color 0.2s;
+  border-radius: 0.5rem;
+  
+  &:hover {
+    background-color: #dde4e5;
+  }
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: #ebeeef;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2d3435;
+  text-decoration: none;
+  cursor: pointer;
+  transition: text-decoration 0.2s;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.requestText {
+  font-size: 0.875rem;
+  color: #5a6061;
+  margin-top: 0;
+}
+
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.acceptBtn {
+  padding: 0.5rem 1rem;
+  background-color: #5e5e5e;
+  color: #f8f8f8;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: #525252;
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.rejectBtn {
+  padding: 0.5rem 1rem;
+  background-color: #ebeeef;
+  color: #2d3435;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: #dde4e5;
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.acceptedBadge {
+  font-size: 0.875rem;
+  color: #5a6061;
+  font-weight: 500;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 0;
+  color: #5a6061;
+}
+
+.emptyText {
+  font-size: 0.875rem;
+}
+
+.earlierSection {
+  margin-top: 4rem;
+}

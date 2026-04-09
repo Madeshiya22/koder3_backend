@@ -64,6 +64,29 @@ export const getAllPosts = async (req, res) => {
   }
 };
 
+export const getUserPosts = async (req, res) => {
+  try {
+    const userId = req.user.id || req.user.userId || req.user._id;
+    
+    const posts = await postModel.find({ author: userId })
+      .populate("author", "username profilePicture fullname")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      message: "User posts fetched successfully",
+      success: true,
+      posts
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ 
+      message: error.message || "Failed to fetch user posts",
+      success: false,
+      posts: []
+    });
+  }
+};
+
 export const getPostById = async (req, res) => {
   try {
     const post = await postModel.findById(req.params.id)
@@ -98,3 +121,87 @@ export const deletePost = async (req, res) => {
     res.status(500).json({ message: error.message || "Failed to delete post" });
   }
 }
+
+export const likePost = async (req, res) => {
+  try {
+    const userId = req.user.id || req.user.userId || req.user._id;
+    const postId = req.params.id;
+
+    const post = await postModel.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ 
+        success: false,
+        message: "Post not found" 
+      });
+    }
+
+    // Check if user already liked the post
+    const alreadyLiked = post.likes.includes(userId);
+    
+    if (alreadyLiked) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Post already liked" 
+      });
+    }
+
+    // Add like
+    post.likes.push(userId);
+    post.likeCount = post.likes.length;
+    await post.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Post liked successfully",
+      likeCount: post.likeCount
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      message: error.message || "Failed to like post" 
+    });
+  }
+};
+
+export const unlikePost = async (req, res) => {
+  try {
+    const userId = req.user.id || req.user.userId || req.user._id;
+    const postId = req.params.id;
+
+    const post = await postModel.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ 
+        success: false,
+        message: "Post not found" 
+      });
+    }
+
+    // Check if user liked the post
+    const likeIndex = post.likes.indexOf(userId);
+    
+    if (likeIndex === -1) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Post not liked by user" 
+      });
+    }
+
+    // Remove like
+    post.likes.splice(likeIndex, 1);
+    post.likeCount = post.likes.length;
+    await post.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Post unliked successfully",
+      likeCount: post.likeCount
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      message: error.message || "Failed to unlike post" 
+    });
+  }
+};
