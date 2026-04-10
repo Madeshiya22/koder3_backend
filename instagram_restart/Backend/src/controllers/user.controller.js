@@ -1,11 +1,12 @@
 import userModel from "../models/user.models.js";
 import followModel from "../models/follow.model.js";
 import mongoose from "mongoose";
+import postModel from "../models/post.model.js";
 
 /**
  * GET /api/users/search?q=abhi
  */
-export const searchUser = async (req, res) => {
+export const searchUser = async (req, res) => { 
   try {
     const { q } = req.query;
     const currentUserId = req.user.userId;
@@ -126,6 +127,7 @@ export const searchUser = async (req, res) => {
     //     }),
     //   );
     // }
+    
 
     res.status(200).json({
       message: "Users fetched successfully",
@@ -262,6 +264,11 @@ export const getProfile = async (req, res) => {
       status: "accepted",
     });
 
+    // Count posts
+    const postsCount = await postModel.countDocuments({
+      author: userId,
+    });
+
     return res.status(200).json({
       message: "Profile fetched successfully",
       success: true,
@@ -271,6 +278,7 @@ export const getProfile = async (req, res) => {
         fullname: user.fullname,
         email: user.email,
         profilePicture: user.profilePicture,
+        posts: postsCount,
         followers: followersCount,
         following: followingCount,
       },
