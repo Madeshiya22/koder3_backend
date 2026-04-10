@@ -1,0 +1,23 @@
+.messages-container {
+  display: flex;
+  height: 100vh;
+
+  .sidebar {
+    width: 25%;
+    border-right: 1px solid #e5e7eb; // gray-200
+
+    .chat-user {
+      padding: 10px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #f3f4f6; // light hover
+      }
+    }
+  }
+
+  .chat-area {
+    width: 75%;
+    padding: 16px;
+  }
+}
