@@ -2,25 +2,62 @@ import followModel from "../models/follow.model.js";
 
 export const getUsers = async (req, res) => {
   try {
-    const loggedInUserId = req.user.id;
+    const username = req.user.username; // 🔥 dynamic user
 
-    const user = await followModel
-      .find({
-        $or: [{ follower: loggedInUserId },
-             { followee: loggedInUserId }],
-        status: "accepted",
-      })
-      .populate("follower followee", "username");
-
-    const users = user.map((follow) => {
-      if (follow.follower._id.toString() === loggedInUserId.toString()) {
-        return follow.followee;
-      } else {
-        return follow.follower;
+    const users = await followModel.aggregate([
+      {
+        $match: {
+          status: "accepted",
+          $or: [
+            { followee: username },
+            { follower: username }
+          ]
+        }
+      },
+      {
+        $addFields: {
+          user: {
+            $cond: {
+              if: { $eq: ['$follower', username] },
+              then: '$followee',
+              else: '$follower'
+            }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: "$user"
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          user: "$_id"
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "username",
+          as: "user"
+        }
+      },
+      {
+        $unwind: "$user"
+      },
+      {
+        $project: {
+          _id: "$user._id",
+          username: "$user.username",
+          profilePicture: "$user.profilePicture"
+        }
       }
-    });
+    ]);
 
     res.status(200).json(users);
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
