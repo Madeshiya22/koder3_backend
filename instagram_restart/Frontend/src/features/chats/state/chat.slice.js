@@ -1,4 +1,4 @@
-import {createSlice} from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 const chatSlice = createSlice({
     name: "chat",
@@ -8,14 +8,20 @@ const chatSlice = createSlice({
     },
     reducers: {
         setChats: (state, action) => {
-            state.chats = action.payload;
+            const users = action.payload;
+            state.chats = users.reduce((acc, user) => {
+                acc[user.id] = user;
+                return acc;
+            }, state.chats);
         },
+
         setCurrentChatId: (state, action) => {
             state.currentChatId = action.payload;
         },
     },
 });
 
-export const {setChats, setCurrentChatId} = chatSlice.actions;
+export const { setChats, setCurrentChatId } = chatSlice.actions;
 
 export default chatSlice.reducer;
+

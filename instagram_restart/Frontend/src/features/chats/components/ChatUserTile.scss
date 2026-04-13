@@ -1,24 +1,50 @@
 .chat-user-tile {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
   cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s ease;
 
   &:hover {
-    background-color: #f3f4f6; // light gray hover
+    background: #dde4e5;
   }
 
-  img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
+  .chat-user-avatar {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
   }
 
-  p {
-    margin: 0;
-    font-size: 14px;
-    font-weight: 500;
+  .chat-user-info {
+    margin-left: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .chat-user-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2d3435;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-user-subtext {
+      font-size: 12px;
+      color: #5a6061;
+      margin-top: 2px;
+    }
   }
 }

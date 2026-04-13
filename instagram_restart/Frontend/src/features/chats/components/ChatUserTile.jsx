@@ -1,19 +1,35 @@
-import React from 'react'
-import './ChatUserTile.scss'
+import React from 'react';
+import { useChat } from '../hooks/useChat';
+import './ChatUserTile.scss';
 
 const ChatUserTile = ({ user }) => {
-    // agar user undefined ho to crash na ho
+    const { setActiveChat } = useChat();
+
     if (!user) return null;
 
-    return (
-        <div className="chat-user-tile">
-            <img 
-                src={user.profilePicture || "/default-avatar.png"} 
-                alt={user.username || "user"} 
-            />
-            <p>{user.username || "Unknown User"}</p>
-        </div>
-    )
-}
+    function handleClick() {
+        setActiveChat(user._id); 
+    }
 
-export default ChatUserTile
+    return (
+        <button className="chat-user-tile" onClick={handleClick}>
+            <div className="chat-user-avatar">
+                <img
+                    src={user.profilePicture || "/default-avatar.png"}
+                    alt={user.username || "user"}
+                />
+            </div>
+
+            <div className="chat-user-info">
+                <p className="chat-user-name">
+                    {user.username || "Unknown User"}
+                </p>
+                <span className="chat-user-subtext">
+                    Tap to view chat
+                </span>
+            </div>
+        </button>
+    );
+};
+
+export default ChatUserTile;
