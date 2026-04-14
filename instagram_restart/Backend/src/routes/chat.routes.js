@@ -1,14 +1,14 @@
-import {Router} from 'react'
-import { getUsers } from '../controllers/chat.controller';
-import { authUser } from '../middleware/auth.middleware';
+import { Router } from "express";
+import { getUsers } from "../controllers/chat.controller.js";
+import { authUser } from "../middleware/auth.middleware.js";
 
-const router = Router ();
+const chatRouter = Router();
 
 /**
  * GET /api/chats/users
 */
 
-router.get('/users',authUser, getUsers);
+chatRouter.get("/users", authUser, getUsers);
 
 
-export default chatRouter; 
+export default chatRouter;
