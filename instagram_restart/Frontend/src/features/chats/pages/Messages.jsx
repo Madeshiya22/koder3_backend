@@ -12,6 +12,7 @@ const Messages = () => {
   const chats = useSelector((state) => state.chat.chats);
   const currentChatId = useSelector((state) => state.chat.currentChatId);
 
+
   const [inputMessage, setInputMessage] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
   const socketRef = useRef(null);
@@ -25,7 +26,7 @@ const Messages = () => {
       self: true,
     };
 
-    // 👇 optimistic UI update
+    //  optimistic UI update
     setChatMessages((prev) => [...prev, newMsg]);
 
     socketRef.current.emit("send_message", {
@@ -38,12 +39,25 @@ const Messages = () => {
 
   // 🔹 SOCKET SETUP
   useEffect(() => {
-    const socket = io(URL);
+    const socket = io(URL,{
+      withCredentials: true,
+    });
+
+
     socketRef.current = socket;
+
+    socket.once("connect",()=>{
+      console.log("Connected to socket server with id: " + socket.id);
+    })
+
+
+    socket.on("connect_error",(data)=>{
+      console.error("Connection error:", data);
+    })
 
     socket.on("receive_message", (data) => {
       setChatMessages((prev) => {
-        // ❗ duplicate avoid
+        // duplicate avoid
         const exists = prev.find(
           (msg) => msg.message === data.message && msg.self
         );

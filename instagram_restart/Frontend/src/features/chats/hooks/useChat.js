@@ -18,8 +18,13 @@ export const useChat = () => {
     };
 
     // 🔹 set active chat
-    const setActiveChat = (chatId) => {
-        dispatch(setCurrentChatId(chatId));
+    const setActiveChat = async () => {
+        try{
+          const data = await getChatUsersByChatId();
+            dispatch(setCurrentChatId(chatId));
+        } catch(error){
+            console.error("Error setting active chat:", error);
+        }
     };
 
     return {
