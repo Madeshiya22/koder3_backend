@@ -14,9 +14,11 @@ const useAuth = () => {
     }) {
         try {
             const userData = await register({ username, fullname, email, password });
-            dispatch(setUser(userData));
+            dispatch(setUser(userData.user));
+            return userData;
         } catch (error) {
             console.error("Registration failed", error);
+            throw error;
         }
     }
 

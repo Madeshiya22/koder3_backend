@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from '../pages/Login.module.scss';
 import  useAuth  from '../hooks/useAuth';
 
 const Login = () => {
 
   const { handleLogin } = useAuth();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     usernameOrEmail: '',
@@ -13,16 +14,22 @@ const Login = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    handleLogin(formData);
-    console.log('Logging in with', formData);
+    setError('');
+    try {
+      await handleLogin(formData);
+      navigate('/');
+    } catch (loginError) {
+      setError(loginError.response?.data?.message || 'Unable to log in');
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -56,6 +63,7 @@ const Login = () => {
           <p className={styles.subtitle}>Welcome back! Please enter your details.</p>
 
           <form onSubmit={handleSubmit} className={styles.form}>
+            {error && <div className={styles.errorMessage}>{error}</div>}
             <div className={styles.inputGroup}>
               <label>Email</label>
               <input

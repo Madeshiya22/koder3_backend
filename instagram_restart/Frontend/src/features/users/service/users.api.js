@@ -19,6 +19,14 @@ export async function followUser({ userId }) {
 
 }
 
+export async function unfollowUser({ userId }) {
+    const response = await axios.post("http://localhost:3000/api/users/unfollow/" + userId, {}, {
+        withCredentials: true
+    })
+
+    return response.data
+}
+
 export async function getFollowRequests() {
     const response = await axios.get("http://localhost:3000/api/users/follow-requests", {
         withCredentials: true

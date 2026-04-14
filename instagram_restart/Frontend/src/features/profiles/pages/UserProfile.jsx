@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { Grid3x3, Video, Bookmark, Tag, MoreHorizontal, User, UserCheck, UserPlus } from 'lucide-react'
+import { Grid3x3, Video, Bookmark, Tag, MoreHorizontal, UserCheck, UserPlus } from 'lucide-react'
 import styles from './UserProfile.module.scss'
 import { getUserProfileData, getUserPosts, getUserVideos, getBookmarkedPosts } from '../services/profile.api'
-import { followUser } from '../../users/service/users.api'
+import { followUser, unfollowUser } from '../../users/service/users.api'
 import ProfileSkeleton from '../components/ProfileSkeleton'
 import PostGrid from '../components/PostGrid'
 
@@ -85,8 +85,16 @@ const UserProfile = () => {
 
     const handleFollowClick = async () => {
         try {
-            await followUser({ userId })
-            setFollowing(!following)
+            if (following) {
+                await unfollowUser({ userId })
+                setFollowing(false)
+            } else {
+                const response = await followUser({ userId })
+                setFollowing(true)
+                if (response?.follow?.status === 'pending') {
+                    setFollowing(true)
+                }
+            }
             fetchProfileData()
         } catch (error) {
             console.error('Error toggling follow:', error)
@@ -129,9 +137,9 @@ const UserProfile = () => {
                 {/* Avatar */}
                 <div className={styles.avatarSection}>
                     <div className={styles.avatarLarge}>
-                        {profileData?.profilePicture ? (
+                        {profileData?.profileImage || profileData?.profilePicture ? (
                             <img 
-                                src={profileData.profilePicture} 
+                                src={profileData.profileImage || profileData.profilePicture} 
                                 alt={profileData.username}
                                 className={styles.avatarImage}
                             />
@@ -180,7 +188,9 @@ const UserProfile = () => {
                                     className={`${styles.followBtn} ${isFollowing ? styles.following : ''}`}
                                     onClick={handleFollowClick}
                                 >
-                                    {isFollowing ? (
+                                    {profileData?.followStatus === 'pending' ? (
+                                        'Requested'
+                                    ) : isFollowing ? (
                                         <>
                                             <UserCheck size={16} /> Following
                                         </>

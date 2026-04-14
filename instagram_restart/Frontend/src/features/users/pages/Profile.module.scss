@@ -15,6 +15,67 @@
   font-size: 1.125rem;
 }
 
+.editPanel {
+  margin: 0 2.5rem 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid #262626;
+  border-radius: 1rem;
+  background: #111111;
+  display: grid;
+  gap: 1rem;
+}
+
+.editRow {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.editLabel {
+  font-size: 0.85rem;
+  color: #a0a0a0;
+}
+
+.editInput,
+.editTextarea,
+.editFile {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid #262626;
+  background: #0b0b0b;
+  color: #ffffff;
+  padding: 0.85rem 1rem;
+  font: inherit;
+}
+
+.editTextarea {
+  resize: vertical;
+}
+
+.editActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.saveBtn,
+.cancelBtn {
+  border: 0;
+  border-radius: 0.75rem;
+  padding: 0.85rem 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.saveBtn {
+  background: linear-gradient(135deg, #4648d4, #6063ee);
+  color: #ffffff;
+}
+
+.cancelBtn {
+  background: #1f1f1f;
+  color: #ffffff;
+}
+
 /* Profile Header */
 .profileHeader {
   display: flex;

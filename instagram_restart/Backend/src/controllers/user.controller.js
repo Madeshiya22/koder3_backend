@@ -3,13 +3,50 @@ import followModel from "../models/follow.model.js";
 import mongoose from "mongoose";
 import postModel from "../models/post.model.js";
 
-/**
- * GET /api/users/search?q=abhi
- */
-export const searchUser = async (req, res) => { 
+function getCurrentUserId(req) {
+  return req.user?.userId || req.user?.id || req.user?._id;
+}
+
+function serializeUser(user) {
+  return {
+    _id: user._id,
+    username: user.username,
+    fullname: user.fullname,
+    email: user.email,
+    profileImage: user.profileImage,
+    profilePicture: user.profileImage,
+    bio: user.bio || "",
+    followers: user.followers?.length || 0,
+    following: user.following?.length || 0,
+  };
+}
+
+async function syncAcceptedRelation(followerId, followeeId) {
+  await userModel.updateOne(
+    { _id: followerId },
+    { $addToSet: { following: followeeId } },
+  );
+  await userModel.updateOne(
+    { _id: followeeId },
+    { $addToSet: { followers: followerId } },
+  );
+}
+
+async function removeAcceptedRelation(followerId, followeeId) {
+  await userModel.updateOne(
+    { _id: followerId },
+    { $pull: { following: followeeId } },
+  );
+  await userModel.updateOne(
+    { _id: followeeId },
+    { $pull: { followers: followerId } },
+  );
+}
+
+export const searchUser = async (req, res) => {
   try {
     const { q } = req.query;
-    const currentUserId = req.user.userId;
+    const currentUserId = getCurrentUserId(req);
 
     if (!q) {
       return res.status(400).json({
@@ -18,120 +55,36 @@ export const searchUser = async (req, res) => {
       });
     }
 
-    // Simple regex search instead of MongoDB Atlas $search
-    const users = await userModel.aggregate(
+    const users = await userModel
+      .find({
+        username: { $regex: q, $options: "i" },
+        _id: { $ne: currentUserId },
+      })
+      .select("username fullname profileImage bio")
+      .limit(20);
 
-      [
-        {
-          $search: {
-            index: 'user_search',
-            autocomplete: {
-              query: q,
-              path: 'username'
-            }
-          }
-        },
-        {
-          $lookup: {
-            from: 'follows',
-            as: 'followDoc',
-            let: { searchUser: '$_id' },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      {
-                        $eq: [
-                          '$followee',
-                          '$$searchUser'
-                        ]
-                      },
-                      {
-                        $eq: [
-                          '$follower',
-                          new mongoose.Types.ObjectId(currentUserId)
-                        ]
-                      }
-                    ]
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          $addFields: {
-            followStatus: {
-              $cond: {
-                if: {
-                  $lt: [{ $size: '$followDoc' }, 1]
-                },
-                then: null,
-                else: {
-                  $cond: {
-                    if: {
-                      $eq: [
-                        {
-                          $arrayElemAt: [
-                            '$followDoc.status',
-                            0
-                          ]
-                        },
-                        'pending'
-                      ]
-                    },
-                    then: 'requested',
-                    else: 'following'
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          $project: {
-            username: 1,
-            fullname: 1,
-            followStatus: 1
-          }
-        }
-      ],
-      { maxTimeMS: 60000, allowDiskUse: true }
+    const usersWithStatus = await Promise.all(
+      users.map(async (user) => {
+        const followDoc = await followModel.findOne({
+          follower: currentUserId,
+          followee: user._id,
+        });
+
+        return {
+          _id: user._id,
+          username: user.username,
+          fullname: user.fullname,
+          profilePicture: user.profileImage,
+          profileImage: user.profileImage,
+          bio: user.bio || "",
+          followStatus: followDoc ? followDoc.status : null,
+        };
+      }),
     );
-
-
-    // If user is authenticated, add follow status
-    // let usersWithStatus = users;
-    // if (req.user) {
-    //   usersWithStatus = await Promise.all(
-    //     users.map(async (user) => {
-    //       const followDoc = await followModel.findOne({
-    //         follower: req.user.id,
-    //         followee: user._id,
-    //       });
-
-    //       let followStatus = "not-following";
-    //       if (followDoc) {
-    //         followStatus =
-    //           followDoc.status === "pending" ? "requested" : "following";
-    //       }
-
-    //       return {
-    //         _id: user._id,
-    //         username: user.username,
-    //         fullname: user.fullname,
-    //         profilePicture: user.profilePicture,
-    //         followStatus,
-    //       };
-    //     }),
-    //   );
-    // }
-    
 
     res.status(200).json({
       message: "Users fetched successfully",
-      users,
+      users: usersWithStatus,
     });
   } catch (error) {
     console.error("Search error:", error);
@@ -146,7 +99,7 @@ export const searchUser = async (req, res) => {
 export const followUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    const currentUserId = req.user.userId;
+    const currentUserId = getCurrentUserId(req);
 
     const isUserExist = await userModel.findById(userId);
 
@@ -157,7 +110,7 @@ export const followUser = async (req, res) => {
       });
     }
 
-    if (userId === currentUserId) {
+    if (String(userId) === String(currentUserId)) {
       return res.status(400).json({
         message: "You cannot follow yourself",
         success: false,
@@ -176,13 +129,24 @@ export const followUser = async (req, res) => {
       });
     }
 
+    const reverseRelation = await followModel.findOne({
+      follower: userId,
+      followee: currentUserId,
+      status: "accepted",
+    });
+
     const follow = await followModel.create({
       follower: currentUserId,
       followee: userId,
+      status: reverseRelation ? "accepted" : "pending",
     });
 
+    if (follow.status === "accepted") {
+      await syncAcceptedRelation(currentUserId, userId);
+    }
+
     return res.status(200).json({
-      message: "Follow request sent successfully",
+      message: follow.status === "accepted" ? "Followed successfully" : "Follow request sent successfully",
       success: true,
       follow,
     });
@@ -196,15 +160,50 @@ export const followUser = async (req, res) => {
   }
 };
 
+export const unfollowUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const currentUserId = getCurrentUserId(req);
+
+    const followDoc = await followModel.findOneAndDelete({
+      follower: currentUserId,
+      followee: userId,
+    });
+
+    if (!followDoc) {
+      return res.status(404).json({
+        message: "Follow relationship not found",
+        success: false,
+      });
+    }
+
+    if (followDoc.status === "accepted") {
+      await removeAcceptedRelation(currentUserId, userId);
+    }
+
+    return res.status(200).json({
+      message: "Unfollowed successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Unfollow error:", error);
+    return res.status(500).json({
+      message: "Error unfollowing user",
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
 export const getFollowRequests = async (req, res) => {
-  const loggedInUserId = req.user.id;
+  const loggedInUserId = getCurrentUserId(req);
 
   const requests = await followModel
     .find({
       followee: loggedInUserId,
       status: "pending",
     })
-    .populate("follower", "username profilePicture");
+    .populate("follower", "username profileImage bio");
 
   return res.status(200).json({
     message: "Follow requests fetched successfully",
@@ -215,7 +214,7 @@ export const getFollowRequests = async (req, res) => {
 
 export const acceptFollowRequest = async (req, res) => {
   const { requestId } = req.params;
-  const loggedInUserId = req.user.id;
+  const loggedInUserId = getCurrentUserId(req);
 
   const followRequest = await followModel.findOne({
     _id: requestId,
@@ -232,6 +231,7 @@ export const acceptFollowRequest = async (req, res) => {
 
   followRequest.status = "accepted";
   await followRequest.save();
+  await syncAcceptedRelation(followRequest.follower, followRequest.followee);
 
   return res.status(200).json({
     message: "Follow request accepted successfully",
@@ -241,7 +241,7 @@ export const acceptFollowRequest = async (req, res) => {
 
 export const getProfile = async (req, res) => {
   try {
-    const userId = req.params.userId || req.user.userId;
+    const userId = req.params.userId || getCurrentUserId(req);
 
     const user = await userModel.findById(userId);
 
@@ -252,35 +252,40 @@ export const getProfile = async (req, res) => {
       });
     }
 
-    // Count followers
     const followersCount = await followModel.countDocuments({
       followee: userId,
       status: "accepted",
     });
 
-    // Count following
     const followingCount = await followModel.countDocuments({
       follower: userId,
       status: "accepted",
     });
 
-    // Count posts
     const postsCount = await postModel.countDocuments({
       author: userId,
     });
+
+    const currentUserId = getCurrentUserId(req);
+    let followStatus = null;
+
+    if (currentUserId && String(currentUserId) !== String(userId)) {
+      const followDoc = await followModel.findOne({
+        follower: currentUserId,
+        followee: userId,
+      });
+      followStatus = followDoc ? followDoc.status : null;
+    }
 
     return res.status(200).json({
       message: "Profile fetched successfully",
       success: true,
       user: {
-        _id: user._id,
-        username: user.username,
-        fullname: user.fullname,
-        email: user.email,
-        profilePicture: user.profilePicture,
+        ...serializeUser(user),
         posts: postsCount,
         followers: followersCount,
         following: followingCount,
+        followStatus,
       },
     });
   } catch (error) {

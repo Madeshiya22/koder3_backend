@@ -12,8 +12,8 @@ export const useLoggedInUser = () => {
     // Agar user ke pass profilePicture nahi hai to
     // default avatar generate kar rahe hain username ke initials/first letter se
     const getProfilePicture = () => {
-        if (user?.profilePicture) {
-            return user.profilePicture;
+        if (user?.profileImage || user?.profilePicture) {
+            return user.profileImage || user.profilePicture;
         }
         
         // Agar koi bhi profile picture nahi hai to

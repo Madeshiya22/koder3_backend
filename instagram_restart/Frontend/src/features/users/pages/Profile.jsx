@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { LogOut, Edit, MessageCircle, Share, Grid3x3, Video, Bookmark, Tag, MoreHorizontal } from 'lucide-react'
+import { LogOut, Grid3x3, Video, Bookmark, Tag, MoreHorizontal } from 'lucide-react'
 import styles from './Profile.module.scss'
 import { setUser } from '../../auth/auth.slice'
-import { getUserProfileData, getUserPosts, getUserVideos, getBookmarkedPosts } from '../../profiles/services/profile.api'
+import { getUserProfileData, getUserPosts, getUserVideos, getBookmarkedPosts, updateProfile } from '../../profiles/services/profile.api'
 import PostGrid from '../../profiles/components/PostGrid'
 
 const Profile = () => {
@@ -17,6 +17,10 @@ const Profile = () => {
     const [bookmarks, setBookmarks] = useState([])
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState('posts')
+    const [isEditing, setIsEditing] = useState(false)
+    const [editForm, setEditForm] = useState({ fullname: '', bio: '' })
+    const [profileImageFile, setProfileImageFile] = useState(null)
+    const [saving, setSaving] = useState(false)
 
     useEffect(() => {
         if (user?._id) {
@@ -42,6 +46,10 @@ const Profile = () => {
             setLoading(true)
             const data = await getUserProfileData({ userId: user._id })
             setProfileData(data)
+            setEditForm({
+                fullname: data.fullname || user.fullname || '',
+                bio: data.bio || user.bio || ''
+            })
         } catch (error) {
             console.error('Error fetching profile:', error)
         } finally {
@@ -96,6 +104,29 @@ const Profile = () => {
         navigate('/login')
     }
 
+    const handleProfileSave = async (event) => {
+        event.preventDefault()
+        try {
+            setSaving(true)
+            const response = await updateProfile({
+                fullname: editForm.fullname,
+                bio: editForm.bio,
+                profileImage: profileImageFile
+            })
+            dispatch(setUser(response.user))
+            setProfileData((previous) => ({
+                ...previous,
+                ...response.user
+            }))
+            setIsEditing(false)
+            setProfileImageFile(null)
+        } catch (error) {
+            console.error('Error updating profile:', error)
+        } finally {
+            setSaving(false)
+        }
+    }
+
     if (!user) {
         return (
             <div className={styles.profileContainer}>
@@ -113,9 +144,9 @@ const Profile = () => {
                 {/* Avatar */}
                 <div className={styles.avatarSection}>
                     <div className={styles.avatarLarge}>
-                        {user?.profilePicture ? (
+                            {user?.profileImage || user?.profilePicture ? (
                             <img 
-                                src={user.profilePicture} 
+                                    src={user.profileImage || user.profilePicture} 
                                 alt={user.username}
                                 className={styles.avatarImage}
                             />
@@ -144,13 +175,16 @@ const Profile = () => {
                     {/* Name and Bio */}
                     <div className={styles.bioSection}>
                         <p className={styles.fullname}>{user?.fullname || 'User'}</p>
-                        <p className={styles.bio}>Enjoy every moment of life</p>
+                        <p className={styles.bio}>{profileData?.bio || 'Enjoy every moment of life'}</p>
                     </div>
 
                     {/* Action Buttons */}
                     <div className={styles.actionButtons}>
-                        <button className={styles.editBtn}>
+                        <button className={styles.editBtn} onClick={() => setIsEditing((previous) => !previous)}>
                             Edit profile
+                        </button>
+                        <button className={styles.viewArchiveBtn} onClick={handleLogout}>
+                            <LogOut size={16} /> Logout
                         </button>
                         <button className={styles.viewArchiveBtn}>
                             View archive
@@ -168,6 +202,45 @@ const Profile = () => {
                     <span className={styles.highlightName}>New</span>
                 </div>
             </div>
+
+            {isEditing && (
+                <form className={styles.editPanel} onSubmit={handleProfileSave}>
+                    <div className={styles.editRow}>
+                        <label className={styles.editLabel}>Display name</label>
+                        <input
+                            className={styles.editInput}
+                            value={editForm.fullname}
+                            onChange={(event) => setEditForm((previous) => ({ ...previous, fullname: event.target.value }))}
+                        />
+                    </div>
+                    <div className={styles.editRow}>
+                        <label className={styles.editLabel}>Bio</label>
+                        <textarea
+                            className={styles.editTextarea}
+                            rows={4}
+                            value={editForm.bio}
+                            onChange={(event) => setEditForm((previous) => ({ ...previous, bio: event.target.value }))}
+                        />
+                    </div>
+                    <div className={styles.editRow}>
+                        <label className={styles.editLabel}>Profile image</label>
+                        <input
+                            className={styles.editFile}
+                            type="file"
+                            accept="image/*"
+                            onChange={(event) => setProfileImageFile(event.target.files?.[0] || null)}
+                        />
+                    </div>
+                    <div className={styles.editActions}>
+                        <button className={styles.saveBtn} type="submit" disabled={saving}>
+                            {saving ? 'Saving...' : 'Save changes'}
+                        </button>
+                        <button className={styles.cancelBtn} type="button" onClick={() => setIsEditing(false)}>
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            )}
 
             {/* Tabs */}
             <div className={styles.tabsSection}>

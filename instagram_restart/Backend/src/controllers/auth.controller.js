@@ -3,6 +3,24 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { config } from "../config/config.js";
 
+function hashPassword(password) {
+  return crypto.createHash("sha256").update(password).digest("hex");
+}
+
+function serializeUser(user) {
+  return {
+    _id: user._id,
+    username: user.username,
+    email: user.email,
+    fullname: user.fullname,
+    bio: user.bio || "",
+    profileImage: user.profileImage,
+    profilePicture: user.profileImage,
+    followers: user.followers?.length || 0,
+    following: user.following?.length || 0,
+  };
+}
+
 export const register = async (req, res) => {
   const { username, email, password, fullname } = req.body;
 
@@ -16,7 +34,7 @@ export const register = async (req, res) => {
         .json({ message: "User already exists", success: "false" });
     }
 
-    const hassedPassword = crypto.createHash("sha256").update(password).digest("hex");
+    const hassedPassword = hashPassword(password);
 
     const newUser = new usermodel({
       username,
@@ -39,13 +57,8 @@ export const register = async (req, res) => {
 
     return res.status(201).json({
       message: "User registered successfully",
-      success: "true",
-      user: {
-        _id: newUser._id,
-        username: newUser.username,
-        email: newUser.email,
-        fullname: newUser.fullname,
-      },
+      success: true,
+      user: serializeUser(newUser),
     });
   } catch (error) {
     return res.status(500).json({
@@ -80,10 +93,7 @@ export const login = async (req, res) => {
     });
 
   }
-  const hassedPassword = crypto
-    .createHash("sha256")
-    .update(password)
-    .digest("hex");
+  const hassedPassword = hashPassword(password);
 
 
 
@@ -107,13 +117,8 @@ export const login = async (req, res) => {
 
   res.status(200).json({
     message: "User logged in successfully",
-    success: "true",
-    user: {
-      _id: existingUser._id,
-      username: existingUser.username,
-      email: existingUser.email,
-      fullname: existingUser.fullname,
-    },
+    success: true,
+    user: serializeUser(existingUser),
   });
 };
 
@@ -128,13 +133,8 @@ export const getMe = async (req, res) => {
 
   res.status(200).json({
     message: "User fetched successfully",
-    success: "true",
-    user: {
-      _id: user._id,
-      username: user.username,
-      email: user.email,
-      fullname: user.fullname,
-    },
+    success: true,
+    user: serializeUser(user),
   });
 };
 
@@ -162,7 +162,7 @@ export async function googleCallback(req, res) {
   }
 
   // Same token logic
-  const token = jwt.sign({ id: user._id }, config.JWT_SECRET, {
+  const token = jwt.sign({ userId: user._id }, config.JWT_SECRET, {
     expiresIn: "7d",
   });
 
@@ -174,11 +174,6 @@ export async function googleCallback(req, res) {
   return res.status(200).json({
     message: "User logged in successfully",
     success: true,
-    user: {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      fullname: user.fullname,
-    },
+    user: serializeUser(user),
   });
 }

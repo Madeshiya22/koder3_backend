@@ -1,21 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap');
 
 // Colors
-$bg: #f8f9fa;
-$surface-low: #f3f4f5;
-$surface-lowest: #ffffff;
-$text-primary: #191c1d;
-$text-secondary: #767586;
-$accent-gradient: linear-gradient(135deg, #4648d4, #6063ee);
+$bg: #020913;
+$text-primary: #f4f5fa;
 
 .container {
   min-height: 100vh;
-  background-color: $bg;
+  background: radial-gradient(circle at top, #0a1221 0%, $bg 34%);
   font-family: 'Inter', sans-serif;
   color: $text-primary;
-  padding: 2rem 1rem;
+  padding: 1.25rem 1rem 2rem;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  max-width: 760px;
+  margin: 0 auto;
 }
 
 .feed {
@@ -23,7 +22,8 @@ $accent-gradient: linear-gradient(135deg, #4648d4, #6063ee);
   max-width: 470px; // Standard IG desktop feed width
   display: flex;
   flex-direction: column;
-  gap: 2.75rem; // Plenty of breathing space
+  gap: 1.25rem;
+  margin: 0 auto;
 }
 
 

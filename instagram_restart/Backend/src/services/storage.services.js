@@ -7,12 +7,12 @@ import {config} from '../config/config.js';
     urlEndpoint: config.IMAGEKIT_URL_ENDPOINT,
 });
 
-export async function uploadFile({buffer,fileName}){
+export async function uploadFile({buffer,fileName, folder = "posts"}){
     try {
         const response = await imagekit.files.upload({
             file:await ImageKit.toFile(buffer),
             fileName,
-            folder: "posts",
+            folder,
         });
         return response;
     } catch (error) {

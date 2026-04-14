@@ -47,6 +47,12 @@ html,body {
   width: 500px;
   height: 500px;
   background: #471775;
+
+.errorMessage {
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
   border-radius: 50%;
   filter: blur(120px);
   top: -150px;

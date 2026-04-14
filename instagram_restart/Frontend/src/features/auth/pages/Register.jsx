@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from './Register.module.scss';
 import useAuth from '../hooks/useAuth';
 
 const Register = () => {
 const { handelRegister } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullname: '',
     username: '',
@@ -13,16 +14,22 @@ const { handelRegister } = useAuth();
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    handelRegister(formData);
-    console.log('Registering with', formData);
+    setError('');
+    try {
+      await handelRegister(formData);
+      navigate('/');
+    } catch (registerError) {
+      setError(registerError.response?.data?.message || 'Unable to create your account');
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -52,6 +59,7 @@ const { handelRegister } = useAuth();
           <p className={styles.subtitle}>Sign up to see photos and videos from your friends.</p>
 
           <form onSubmit={handleSubmit} className={styles.form}>
+            {error && <div className={styles.errorMessage}>{error}</div>}
             <div className={styles.inputGroup}>
               <label>Full Name</label>
               <input

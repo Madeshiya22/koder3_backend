@@ -1,4 +1,4 @@
-import { searchUser, followUser, getFollowRequests, acceptFollowRequest } from "../service/users.api"
+import { searchUser, followUser, unfollowUser, getFollowRequests, acceptFollowRequest } from "../service/users.api"
 import { appendRequest, setFollowRequest, acceptFollowRequestState } from "../../user.slice"
 import { useDispatch } from "react-redux"
 
@@ -13,8 +13,15 @@ export const useUser = () => {
 
     async function handleFollowUser({ userId }) {
         const data = await followUser({ userId })
-        dispatch(appendRequest(userId))
+        if (data?.follow?.status === 'pending') {
+            dispatch(appendRequest(userId))
+        }
         return data.follow
+    }
+
+    async function handleUnfollowUser({ userId }) {
+        const data = await unfollowUser({ userId })
+        return data
     }
 
     async function handleGetFollowRequests() {
@@ -31,6 +38,7 @@ export const useUser = () => {
     return {
         handleSearchUser,
         handleFollowUser,
+        handleUnfollowUser,
         handleGetFollowRequests,
         handleAcceptFollowRequest
     }

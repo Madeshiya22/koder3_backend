@@ -4,11 +4,13 @@ import { useDispatch } from 'react-redux'
 import { setUser } from '../features/auth/auth.slice'
 import { router } from './app.routes.jsx'
 import axios from 'axios'
+import { useState } from 'react'
 
 const API_BASE_URL = 'http://localhost:3000'
 
 const App = () => {
   const dispatch = useDispatch()
+  const [ready, setReady] = useState(false)
 
   // Restore user on app load
   useEffect(() => {
@@ -22,11 +24,17 @@ const App = () => {
         }
       } catch (error) {
         console.log('No active session')
+      } finally {
+        setReady(true)
       }
     }
 
     restoreUser()
   }, [dispatch])
+
+  if (!ready) {
+    return <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', color: '#fff', background: '#000' }}>Loading...</div>
+  }
 
   return (
     <RouterProvider router={router} />

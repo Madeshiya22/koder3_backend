@@ -1,5 +1,5 @@
 import express from "express"
-import { searchUser, followUser, getFollowRequests, acceptFollowRequest, getProfile } from "../controllers/user.controller.js"
+import { searchUser, followUser, unfollowUser, getFollowRequests, acceptFollowRequest, getProfile } from "../controllers/user.controller.js"
 import { authUser } from "../middleware/auth.middleware.js"
 import { validateFollowUser, validateFollowRequest } from "../validator/user.validators.js"
 
@@ -10,6 +10,8 @@ router.get("/search", authUser, searchUser)
 router.get("/profile/:userId", authUser, getProfile)
 
 router.post("/follow/:userId", authUser,  followUser)
+
+router.post("/unfollow/:userId", authUser, validateFollowUser, unfollowUser)
 
 router.get("/follow-requests", authUser, getFollowRequests)
 

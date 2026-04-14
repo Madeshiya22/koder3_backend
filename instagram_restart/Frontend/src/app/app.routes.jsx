@@ -10,46 +10,58 @@ import AppLayout from "../components/layout/AppLayout"
 import Search from "../features/users/pages/Search"
 import Notification from "../features/users/pages/Notification" 
 import Messages from '../features/chats/pages/Messages'   
+import RequireAuth from '../components/auth/RequireAuth'
+import PublicOnlyRoute from '../components/auth/PublicOnlyRoute'
 
 export const router = createBrowserRouter([
     {
         path: '/',
-        element: <AppLayout />,
+        element: <RequireAuth />,
         children: [
             {
-                path: '/',
-                element: <Home />
-            },
-            {
-                path: '/profile',
-                element: <Profile />
-            },
-            {
-                path: '/profile/:userId',
-                element: <UserProfile />
-            },
-            {
-                path: '/create',
-                element: <CreatePost />
-            },{
-                path: '/search',
-                element: <Search />            },
-            {
-                path: '/notifications',
-                element: <Notification />            },
-            {
-                path: '/messages',
-                element: <Messages />
-            }
+                element: <AppLayout />,
+                children: [
+                    {
+                        path: '/',
+                        element: <Home />
+                    },
+                    {
+                        path: '/profile',
+                        element: <Profile />
+                    },
+                    {
+                        path: '/profile/:userId',
+                        element: <UserProfile />
+                    },
+                    {
+                        path: '/create',
+                        element: <CreatePost />
+                    },{
+                        path: '/search',
+                        element: <Search />            },
+                    {
+                        path: '/notifications',
+                        element: <Notification />            },
+                    {
+                        path: '/messages',
+                        element: <Messages />
+                    }
 
+                ]
+            }
         ]
     },
     {
-        path: '/login',
-        element: <Login />
-    },
-    {
-        path: '/register',
-        element: <Register />
+        element: <PublicOnlyRoute />,
+        children: [
+            {
+                path: '/login',
+                element: <Login />
+            },
+            {
+                path: '/register',
+                element: <Register />
+            }
+        ]
     }
 ])

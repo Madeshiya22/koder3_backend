@@ -2,6 +2,7 @@ import userModel from "../models/user.models.js";
 import followModel from "../models/follow.model.js";
 import postModel from "../models/post.model.js";
 import bookmarkModel from "../models/bookmark.model.js";
+import { uploadFile } from "../services/storage.services.js";
 
 /**
  * GET /api/profiles/:userId
@@ -51,7 +52,8 @@ export const getUserProfile = async (req, res) => {
                 username: user.username,
                 fullname: user.fullname,
                 email: user.email,
-                profilePicture: user.profilePicture,
+                profileImage: user.profileImage,
+                profilePicture: user.profileImage,
                 bio: user.bio || "",
                 posts: postsCount,
                 followers: followersCount,
@@ -65,6 +67,64 @@ export const getUserProfile = async (req, res) => {
             success: false,
             message: "Error fetching profile",
             error: error.message
+        });
+    }
+};
+
+export const updateProfile = async (req, res) => {
+    try {
+        const userId = req.user.userId || req.user.id || req.user._id;
+        const { bio, fullname } = req.body;
+
+        const update = {};
+
+        if (typeof bio === "string") {
+            update.bio = bio;
+        }
+
+        if (typeof fullname === "string" && fullname.trim()) {
+            update.fullname = fullname.trim();
+        }
+
+        if (req.file) {
+            const result = await uploadFile({
+                buffer: req.file.buffer,
+                fileName: req.file.originalname,
+                folder: "profiles",
+            });
+            update.profileImage = result.url;
+        }
+
+        const user = await userModel.findByIdAndUpdate(userId, update, {
+            new: true,
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            user: {
+                _id: user._id,
+                username: user.username,
+                fullname: user.fullname,
+                email: user.email,
+                profileImage: user.profileImage,
+                profilePicture: user.profileImage,
+                bio: user.bio || "",
+            },
+        });
+    } catch (error) {
+        console.error("Profile update error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error updating profile",
+            error: error.message,
         });
     }
 };

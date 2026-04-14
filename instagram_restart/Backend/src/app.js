@@ -5,6 +5,7 @@ import authRouter from "./routes/auth.routes.js";
 import postRouter from "./routes/post.routes.js";
 import userRouter from "./routes/user.routes.js";
 import profileRouter from "./routes/profile.routes.js";
+import socialRouter from "./routes/social.routes.js";
 import {config} from "./config/config.js";  
 import chatRouter from "./routes/chat.routes.js";
 import passport from "passport";
@@ -23,6 +24,7 @@ app.use(cors({
     origin: config.FRONTEND_URL,
     credentials: true,
 }));
+app.use(passport.initialize());
 
 
 app.use("/api/auth", authRouter);
@@ -30,8 +32,7 @@ app.use("/api/posts", postRouter);
 app.use("/api/users", userRouter);
 app.use("/api/profiles", profileRouter);
 app.use("/api/chats", chatRouter);
-
-app.use(passport.initialize());
+app.use("/api", socialRouter);
 
 passport.use(new GoogleStrategy({
     clientID: config.CLIENT_ID,

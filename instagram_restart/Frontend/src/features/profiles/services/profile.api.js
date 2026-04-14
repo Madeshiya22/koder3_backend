@@ -123,3 +123,40 @@ export async function isPostBookmarked({ postId }) {
         return false;
     }
 }
+
+/**
+ * Update current user's profile
+ */
+export async function updateProfile({ bio, fullname, profileImage }) {
+    try {
+        const formData = new FormData();
+
+        if (typeof bio === "string") {
+            formData.append("bio", bio);
+        }
+
+        if (typeof fullname === "string") {
+            formData.append("fullname", fullname);
+        }
+
+        if (profileImage) {
+            formData.append("profileImage", profileImage);
+        }
+
+        const response = await axios.put(
+            `${API_BASE_URL}/api/profile`,
+            formData,
+            {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        throw error;
+    }
+}
