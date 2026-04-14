@@ -3,9 +3,10 @@
   max-width: 42rem;
   margin: 0 auto;
   padding: 2rem 1rem;
-  background-color: #f9f9f9;
+  background-color: #000;
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
+  color: #fff;
 }
 
 .title {
@@ -16,7 +17,7 @@
   }
   
   font-weight: 600;
-  color: #2d3435;
+  color: #fff;
   margin-bottom: 2rem;
   letter-spacing: -0.025em;
 }
@@ -28,7 +29,7 @@
 .sectionTitle {
   font-size: 1.5rem;
   font-weight: 500;
-  color: #2d3435;
+  color: #fff;
   margin-bottom: 1rem;
 }
 
@@ -43,12 +44,12 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-  background-color: #ffffff;
+  background-color: #101010;
   transition: background-color 0.2s;
   border-radius: 0.5rem;
   
   &:hover {
-    background-color: #dde4e5;
+    background-color: #181818;
   }
 }
 
@@ -64,7 +65,7 @@
   border-radius: 9999px;
   overflow: hidden;
   flex-shrink: 0;
-  background-color: #ebeeef;
+  background-color: #1a1a1a;
   
   img {
     width: 100%;
@@ -82,7 +83,7 @@
 .username {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #2d3435;
+  color: #fff;
   text-decoration: none;
   cursor: pointer;
   transition: text-decoration 0.2s;
@@ -94,7 +95,7 @@
 
 .requestText {
   font-size: 0.875rem;
-  color: #5a6061;
+  color: #9a9a9a;
   margin-top: 0;
 }
 
@@ -106,8 +107,8 @@
 
 .acceptBtn {
   padding: 0.5rem 1rem;
-  background-color: #5e5e5e;
-  color: #f8f8f8;
+  background-color: #fff;
+  color: #000;
   font-size: 0.875rem;
   font-weight: 500;
   border: none;
@@ -116,7 +117,7 @@
   transition: background-color 0.2s;
   
   &:hover {
-    background-color: #525252;
+    background-color: #d9d9d9;
   }
   
   &:active {
@@ -126,8 +127,8 @@
 
 .rejectBtn {
   padding: 0.5rem 1rem;
-  background-color: #ebeeef;
-  color: #2d3435;
+  background-color: #1f1f1f;
+  color: #fff;
   font-size: 0.875rem;
   font-weight: 500;
   border: none;
@@ -136,7 +137,7 @@
   transition: background-color 0.2s;
   
   &:hover {
-    background-color: #dde4e5;
+    background-color: #2b2b2b;
   }
   
   &:active {
@@ -146,7 +147,7 @@
 
 .acceptedBadge {
   font-size: 0.875rem;
-  color: #5a6061;
+  color: #9a9a9a;
   font-weight: 500;
 }
 
@@ -156,7 +157,7 @@
   align-items: center;
   justify-content: center;
   padding: 4rem 0;
-  color: #5a6061;
+  color: #9a9a9a;
 }
 
 .emptyText {

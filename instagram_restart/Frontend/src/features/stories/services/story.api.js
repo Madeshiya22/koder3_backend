@@ -2,26 +2,32 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:3000";
 
-export async function getStories() {
+export async function getStoriesFeed() {
     try {
         const response = await axios.get(`${API_BASE_URL}/api/stories`, {
             withCredentials: true,
         });
-        return response.data.stories || [];
+        return {
+            stories: response.data.stories || [],
+            ownStories: response.data.ownStories || [],
+        };
     } catch (error) {
         console.error("Error fetching stories:", error);
         throw error;
     }
 }
 
-export async function getHomeStories() {
+export const getHomeStories = getStoriesFeed;
+
+export async function getStoriesByUser(userId) {
     try {
-        const response = await axios.get(`${API_BASE_URL}/api/home`, {
+        const response = await axios.get(`${API_BASE_URL}/api/stories/${userId}`, {
             withCredentials: true,
         });
+
         return response.data.stories || [];
     } catch (error) {
-        console.error("Error fetching home stories:", error);
+        console.error("Error fetching user stories:", error);
         throw error;
     }
 }

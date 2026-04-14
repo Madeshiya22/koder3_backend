@@ -12,6 +12,8 @@ import Notification from "../features/users/pages/Notification"
 import Messages from '../features/chats/pages/Messages'   
 import RequireAuth from '../components/auth/RequireAuth'
 import PublicOnlyRoute from '../components/auth/PublicOnlyRoute'
+import StoryViewerPage from '../features/stories/pages/StoryViewerPage'
+import StoryUpload from '../features/stories/pages/StoryUpload'
 
 export const router = createBrowserRouter([
     {
@@ -45,6 +47,14 @@ export const router = createBrowserRouter([
                     {
                         path: '/messages',
                         element: <Messages />
+                    },
+                    {
+                        path: '/stories/upload',
+                        element: <StoryUpload />
+                    },
+                    {
+                        path: '/stories/:userId',
+                        element: <StoryViewerPage />
                     }
 
                 ]

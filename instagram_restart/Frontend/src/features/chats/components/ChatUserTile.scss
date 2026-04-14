@@ -10,7 +10,7 @@
   transition: background 0.2s ease;
 
   &:hover {
-    background: #dde4e5;
+    background: #161616;
   }
 
   .chat-user-avatar {
@@ -35,7 +35,7 @@
     .chat-user-name {
       font-size: 14px;
       font-weight: 600;
-      color: #2d3435;
+      color: #fff;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -43,7 +43,7 @@
 
     .chat-user-subtext {
       font-size: 12px;
-      color: #5a6061;
+      color: #9a9a9a;
       margin-top: 2px;
     }
   }

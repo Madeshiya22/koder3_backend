@@ -23,7 +23,7 @@ const StoriesBar = () => {
         try {
             setLoading(true);
             const data = await getHomeStories();
-            setStories(data);
+            setStories(Array.isArray(data) ? data : data?.stories || []);
         } catch (error) {
             setStories([]);
         } finally {

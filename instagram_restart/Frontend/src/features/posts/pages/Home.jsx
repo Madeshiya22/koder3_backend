@@ -4,7 +4,7 @@ import PostCard from '../components/PostCard';
 import { useSelector } from 'react-redux';
 import { usePost } from '../hooks/usePost';
 import { useEffect } from 'react';
-import StoriesBar from '../../stories/components/StoriesBar';
+import StoryList from '../../stories/components/StoryList';
 
 
 const Home = () => {
@@ -16,7 +16,7 @@ const Home = () => {
   }, [])
   return (
     <div className={styles.container}>
-      <StoriesBar />
+      <StoryList />
       <div className={styles.feed}>
         {posts.map(post => (
           <PostCard key={post._id} post={post} />

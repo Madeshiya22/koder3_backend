@@ -55,7 +55,7 @@ export async function createPost(req, res) {
 export const getAllPosts = async (req, res) => {
   try {
     const posts = await postModel.find()
-      .populate("author", "username profilePicture avatar location")
+      .populate("author", "username profileImage profilePicture avatar location")
       .sort({ createdAt: -1 });
 
     res.json(posts);
@@ -69,7 +69,7 @@ export const getUserPosts = async (req, res) => {
     const userId = req.user.id || req.user.userId || req.user._id;
     
     const posts = await postModel.find({ author: userId })
-      .populate("author", "username profilePicture fullname")
+      .populate("author", "username profileImage profilePicture fullname")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -90,7 +90,7 @@ export const getUserPosts = async (req, res) => {
 export const getPostById = async (req, res) => {
   try {
     const post = await postModel.findById(req.params.id)
-      .populate("author", "username fullname profilePicture");
+      .populate("author", "username fullname profileImage profilePicture");
 
     if (!post) {
       return res.status(404).json({ message: "Post not found" });

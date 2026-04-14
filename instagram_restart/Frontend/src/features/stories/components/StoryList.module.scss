@@ -1,0 +1,27 @@
+.wrapper {
+  width: 100%;
+  background: #000;
+//   border: 1px solid #000000;
+  border-radius: 14px;
+  padding: 14px 10px;
+  margin-bottom: 16px;
+}
+
+.strip {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 2px 2px 8px;
+
+  scrollbar-width: thin;
+  scrollbar-color: #3a3a3a transparent;
+}
+
+.strip::-webkit-scrollbar {
+  height: 6px;
+}
+
+.strip::-webkit-scrollbar-thumb {
+  background: #3a3a3a;
+  border-radius: 999px;
+}
