@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { getChatUsers, getChatUsersByChatId } from '../services/chat.api.js';
+import { getChatUsers } from '../services/chat.api.js';
 import { setChats, setCurrentChatId } from '../state/chat.slice.js';
 
 export const useChat = () => {
@@ -18,9 +18,8 @@ export const useChat = () => {
     };
 
     // 🔹 set active chat
-    const setActiveChat = async () => {
+    const setActiveChat = (chatId) => {
         try{
-          const data = await getChatUsersByChatId();
             dispatch(setCurrentChatId(chatId));
         } catch(error){
             console.error("Error setting active chat:", error);

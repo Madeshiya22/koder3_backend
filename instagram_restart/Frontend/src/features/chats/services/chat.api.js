@@ -22,12 +22,10 @@ export const getChatUsers = async () => {
     }
 };
 
-
-// 🔹 Specific chat ke users (group ya detail view)
-export const getChatUsersByChatId = async (chatId) => {
+// 🔹 Selected user ke saath message history
+export const getMessagesByUserId = async (userId) => {
     try {
-        // dynamic route: /chats/:chatId/users
-        const { data } = await API.get(`/chats/${chatId}/users`);
+        const { data } = await API.get(`/chats/${userId}/messages`);
 
         return data;
 

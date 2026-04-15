@@ -2,6 +2,11 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:3000";
 
+function resolvePostId(input) {
+    if (typeof input === "string") return input;
+    return input?.postId;
+}
+
 /**
  * Get user profile with stats
  */
@@ -78,8 +83,12 @@ export async function getBookmarkedPosts({ page = 1, limit = 12 }) {
 /**
  * Bookmark a post
  */
-export async function bookmarkPost({ postId }) {
+export async function bookmarkPost(input) {
     try {
+        const postId = resolvePostId(input);
+        if (!postId) {
+            throw new Error("postId is required");
+        }
         const response = await axios.post(
             `${API_BASE_URL}/api/profiles/${postId}/bookmark`,
             {},
@@ -95,8 +104,12 @@ export async function bookmarkPost({ postId }) {
 /**
  * Remove bookmark from post
  */
-export async function removeBookmark({ postId }) {
+export async function removeBookmark(input) {
     try {
+        const postId = resolvePostId(input);
+        if (!postId) {
+            throw new Error("postId is required");
+        }
         const response = await axios.delete(
             `${API_BASE_URL}/api/profiles/${postId}/bookmark`,
             { withCredentials: true }
@@ -111,8 +124,12 @@ export async function removeBookmark({ postId }) {
 /**
  * Check if post is bookmarked
  */
-export async function isPostBookmarked({ postId }) {
+export async function isPostBookmarked(input) {
     try {
+        const postId = resolvePostId(input);
+        if (!postId) {
+            throw new Error("postId is required");
+        }
         const response = await axios.get(
             `${API_BASE_URL}/api/profiles/${postId}/is-bookmarked`,
             { withCredentials: true }

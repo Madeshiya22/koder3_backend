@@ -1,8 +1,17 @@
+import mongoose from "mongoose";
 import followModel from "../models/follow.model.js";
+import messageModel from "../models/message.model.js";
 
 export const getUsers = async (req, res) => {
   try {
-    const username = req.user.username; // dynamic user
+        const loggedInUserId = req.user?.userId || req.user?.id || req.user?._id;
+
+        if (!loggedInUserId) {
+            return res.status(401).json({
+                message: "Unauthorized",
+                success: false,
+            });
+        }
 
     const users = await followModel.aggregate(
       [
@@ -62,11 +71,11 @@ export const getUsers = async (req, res) => {
                     profilePicture: '$user.profilePicture'
                 }
             }
-        ]);
+                ]);
 
     res.status(200).json({
       message: "Users fetched successfully",
-      success: "true",
+            success: true,
       users
     });
 
@@ -74,5 +83,68 @@ export const getUsers = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
+};
+
+export const getMessages = async (req, res) => {
+    try {
+        const senderId = req.user?.userId || req.user?.id || req.user?._id;
+        const receiverId = req.params.userId;
+
+        if (!senderId || !receiverId) {
+            return res.status(400).json({
+                success: false,
+                message: "Sender and receiver are required",
+            });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(receiverId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid user id",
+            });
+        }
+
+        const [senderToReceiver, receiverToSender] = await Promise.all([
+            followModel.findOne({
+                follower: senderId,
+                followee: receiverId,
+                status: "accepted",
+            }),
+            followModel.findOne({
+                follower: receiverId,
+                followee: senderId,
+                status: "accepted",
+            }),
+        ]);
+
+        if (!senderToReceiver || !receiverToSender) {
+            return res.status(403).json({
+                success: false,
+                message: "Only mutually accepted followers can chat",
+            });
+        }
+
+        const messages = await messageModel
+            .find({
+                $or: [
+                    { sender: senderId, receiver: receiverId },
+                    { sender: receiverId, receiver: senderId },
+                ],
+            })
+            .sort({ createdAt: 1 });
+
+        return res.status(200).json({
+            success: true,
+            message: "Messages fetched successfully",
+            messages,
+        });
+    } catch (error) {
+        console.error("Get messages error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error fetching messages",
+            error: error.message,
+        });
+    }
 };
 

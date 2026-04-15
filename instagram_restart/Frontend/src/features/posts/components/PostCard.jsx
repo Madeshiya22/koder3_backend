@@ -27,7 +27,7 @@ const PostCard = ({ post, onLikeChange }) => {
   useEffect(() => {
     const checkBookmarkStatus = async () => {
       try {
-        const result = await isPostBookmarked(post._id);
+        const result = await isPostBookmarked({ postId: post._id });
         setIsBookmarked(result);
       } catch (error) {
         console.error('Error checking bookmark status:', error);
@@ -73,10 +73,10 @@ const PostCard = ({ post, onLikeChange }) => {
     try {
       setBookmarkLoading(true);
       if (isBookmarked) {
-        await removeBookmark(post._id);
+        await removeBookmark({ postId: post._id });
         setIsBookmarked(false);
       } else {
-        await bookmarkPost(post._id);
+        await bookmarkPost({ postId: post._id });
         setIsBookmarked(true);
       }
     } catch (error) {

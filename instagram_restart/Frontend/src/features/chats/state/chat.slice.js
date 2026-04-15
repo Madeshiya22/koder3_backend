@@ -10,7 +10,7 @@ const chatSlice = createSlice({
         setChats: (state, action) => {
             const users = action.payload;
             state.chats = users.reduce((acc, user) => {
-                acc[user.id] = {
+                acc[user._id] = {
                     ...user,
                     messages: [],
                 };

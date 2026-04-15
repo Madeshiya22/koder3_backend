@@ -1,21 +1,45 @@
 import message from "../../models/message.model.js";
+import followModel from "../../models/follow.model.js";
 
 export default function messageHandler(io, socket) {
-    socket.on("send_message", ({ message, receiver }) => {
+    socket.on("send_message", async ({ message, receiver, chatId }) => {
         try {
+            const targetUserId = receiver || chatId;
 
-            if (!message || !receiver) {
+            if (!message || !targetUserId) {
                 console.log("Invalid payload");
                 return;
             }
 
-            // Save message to DB
+            const senderId = socket.user.id;
+
+            const [senderToReceiver, receiverToSender] = await Promise.all([
+                followModel.findOne({
+                    follower: senderId,
+                    followee: targetUserId,
+                    status: "accepted",
+                }),
+                followModel.findOne({
+                    follower: targetUserId,
+                    followee: senderId,
+                    status: "accepted",
+                }),
+            ]);
+
+            if (!senderToReceiver || !receiverToSender) {
+                socket.emit("message_error", {
+                    error: "Only mutually accepted followers can chat",
+                });
+                return;
+            }
+
             const newMessage = new message({
-                sender: socket.user.id,
-                receiver,
+                sender: senderId,
+                receiver: targetUserId,
                 message
             });
 
+            await newMessage.save();
 
             const payload = {
                 _id: newMessage._id,
@@ -25,12 +49,9 @@ export default function messageHandler(io, socket) {
                 createdAt: newMessage.createdAt,
                 updatedAt: newMessage.updatedAt
             }
-            // Emit message to receiver
-            io.to(receiver).emit("receive_message", payload);
 
-            // Emit message back to sender for confirmation
+            io.to(targetUserId).emit("receive_message", payload);
             socket.emit("message_sent", payload);
-            
         } catch (error) {
             console.error("Error sending message:", error);
             socket.emit("message_error", { error: "Failed to send message" });
