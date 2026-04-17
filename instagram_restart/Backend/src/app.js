@@ -11,6 +11,8 @@ import chatRouter from "./routes/chat.routes.js";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
 
 
@@ -21,7 +23,8 @@ app.use(express.urlencoded({extended: true})); // needed to read form-data from 
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(cors({
-    origin: config.FRONTEND_URL,
+    // origin: config.FRONTEND_URL,
+    origin:true,
     credentials: true,
 }));
 app.use(passport.initialize());
@@ -33,6 +36,25 @@ app.use("/api/users", userRouter);
 app.use("/api/profiles", profileRouter);
 app.use("/api/chats", chatRouter);
 app.use("/api", socialRouter);
+
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// frontend build path
+const frontendPath = path.join(__dirname, "../../frontend/dist");
+
+console.log("Frontend Path:", frontendPath);
+
+// static serve
+app.use(express.static(frontendPath));
+
+// SPA handle (React Router)
+app.get("/*splat", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
+
 
 passport.use(new GoogleStrategy({
     clientID: config.CLIENT_ID,
