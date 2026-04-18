@@ -5,7 +5,7 @@ import createSocketServer from "./src/sockets/app.socket.js";
 const { httpServer, io } = createSocketServer(app);
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 connectDB();
 
