@@ -1,7 +1,7 @@
 import axios from "axios"
 
 export async function getPosts() {
-    const response = await axios.get("http://localhost:3000/api/posts", {
+    const response = await axios.get("/api/posts", {
         withCredentials: true
     })
 
@@ -9,7 +9,7 @@ export async function getPosts() {
 }
 
 export async function getUserPosts() {
-    const response = await axios.get("http://localhost:3000/api/posts/user/me", {
+    const response = await axios.get("/api/posts/user/me", {
         withCredentials: true
     })
 
@@ -24,7 +24,7 @@ export async function createPost({ files, caption }) {
         formData.append("media", files[i])
     }
 
-    const response = await axios.post("http://localhost:3000/api/posts/create", formData, { withCredentials: true })
+    const response = await axios.post("/api/posts/create", formData, { withCredentials: true })
 
     return response.data
 }

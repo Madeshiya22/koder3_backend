@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 🔹 Axios instance bana rahe hain (base URL + credentials)
 const API = axios.create({
-    baseURL: "http://localhost:3000/api",
+    baseURL: "/api",
     withCredentials: true, // cookies (auth) automatically send hongi
 });
 

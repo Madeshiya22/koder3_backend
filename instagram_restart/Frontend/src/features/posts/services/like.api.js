@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "/api";
 
 export async function likePost(postId) {
   try {
     const response = await axios.post(
-      `${API_BASE_URL}/api/posts/${postId}/like`,
+      `${API_BASE_URL}/posts/${postId}/like`,
       {},
       { withCredentials: true }
     );
@@ -19,7 +19,7 @@ export async function likePost(postId) {
 export async function unlikePost(postId) {
   try {
     const response = await axios.post(
-      `${API_BASE_URL}/api/posts/${postId}/unlike`,
+      `${API_BASE_URL}/posts/${postId}/unlike`,
       {},
       { withCredentials: true }
     );

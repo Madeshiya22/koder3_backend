@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "/api";
 
 export async function getStoriesFeed() {
     try {
-        const response = await axios.get(`${API_BASE_URL}/api/stories`, {
+        const response = await axios.get(`${API_BASE_URL}/stories`, {
             withCredentials: true,
         });
         return {
@@ -21,7 +21,7 @@ export const getHomeStories = getStoriesFeed;
 
 export async function getStoriesByUser(userId) {
     try {
-        const response = await axios.get(`${API_BASE_URL}/api/stories/${userId}`, {
+        const response = await axios.get(`${API_BASE_URL}/stories/${userId}`, {
             withCredentials: true,
         });
 
@@ -37,7 +37,7 @@ export async function uploadStory({ storyImage }) {
         const formData = new FormData();
         formData.append("storyImage", storyImage);
 
-        const response = await axios.post(`${API_BASE_URL}/api/story`, formData, {
+        const response = await axios.post(`${API_BASE_URL}/stories`, formData, {
             withCredentials: true,
             headers: {
                 "Content-Type": "multipart/form-data"

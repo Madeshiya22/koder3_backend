@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "/api";
 
 function resolvePostId(input) {
     if (typeof input === "string") return input;
@@ -13,7 +13,7 @@ function resolvePostId(input) {
 export async function getUserProfileData({ userId }) {
     try {
         const response = await axios.get(
-            `${API_BASE_URL}/api/profiles/${userId}`,
+            `${API_BASE_URL}/profiles/${userId}`,
             { withCredentials: true }
         );
         return response.data.user;
@@ -29,7 +29,7 @@ export async function getUserProfileData({ userId }) {
 export async function getUserPosts({ userId, page = 1, limit = 12 }) {
     try {
         const response = await axios.get(
-            `${API_BASE_URL}/api/profiles/${userId}/posts`,
+            `${API_BASE_URL}/profiles/${userId}/posts`,
             {
                 params: { page, limit },
                 withCredentials: true
@@ -48,7 +48,7 @@ export async function getUserPosts({ userId, page = 1, limit = 12 }) {
 export async function getUserVideos({ userId, page = 1, limit = 12 }) {
     try {
         const response = await axios.get(
-            `${API_BASE_URL}/api/profiles/${userId}/videos`,
+            `${API_BASE_URL}/profiles/${userId}/videos`,
             {
                 params: { page, limit },
                 withCredentials: true
@@ -67,7 +67,7 @@ export async function getUserVideos({ userId, page = 1, limit = 12 }) {
 export async function getBookmarkedPosts({ page = 1, limit = 12 }) {
     try {
         const response = await axios.get(
-            `${API_BASE_URL}/api/profiles/current/bookmarks`,
+            `${API_BASE_URL}/profiles/current/bookmarks`,
             {
                 params: { page, limit },
                 withCredentials: true
@@ -90,7 +90,7 @@ export async function bookmarkPost(input) {
             throw new Error("postId is required");
         }
         const response = await axios.post(
-            `${API_BASE_URL}/api/profiles/${postId}/bookmark`,
+            `${API_BASE_URL}/profiles/${postId}/bookmark`,
             {},
             { withCredentials: true }
         );
@@ -111,7 +111,7 @@ export async function removeBookmark(input) {
             throw new Error("postId is required");
         }
         const response = await axios.delete(
-            `${API_BASE_URL}/api/profiles/${postId}/bookmark`,
+            `${API_BASE_URL}/profiles/${postId}/bookmark`,
             { withCredentials: true }
         );
         return response.data;
@@ -131,7 +131,7 @@ export async function isPostBookmarked(input) {
             throw new Error("postId is required");
         }
         const response = await axios.get(
-            `${API_BASE_URL}/api/profiles/${postId}/is-bookmarked`,
+            `${API_BASE_URL}/profiles/${postId}/is-bookmarked`,
             { withCredentials: true }
         );
         return response.data.isBookmarked;
@@ -161,7 +161,7 @@ export async function updateProfile({ bio, fullname, profileImage }) {
         }
 
         const response = await axios.put(
-            `${API_BASE_URL}/api/profile`,
+            `${API_BASE_URL}/profiles/current`,
             formData,
             {
                 withCredentials: true,
