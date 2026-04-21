@@ -36,16 +36,7 @@ app.use("/api/profiles", profileRouter);
 app.use("/api/chats", chatRouter);
 app.use("/api", socialRouter);
 
-// frontend build path
-const frontendPath = path.join(path.resolve(), "dist");
 
-// static serve
-app.use(express.static(frontendPath));
-
-// SPA handle (React Router)
-app.get("/*splat", (req, res) => {
-  res.sendFile(path.resolve(frontendPath, "index.html"));
-});
 
 passport.use(
   new GoogleStrategy(
@@ -64,5 +55,18 @@ passport.use(
 app.get("/", (req, res) => {
   res.send("Welcome to the Instagram API");
 });
+
+
+// -----------------Frontend build serving-----------------
+// frontend build path
+const frontendPath = path.join(path.resolve(), "public");
+
+// static serve
+app.use(express.static(frontendPath));
+
+// SPA fallback (Express 5 compatible)
+app.use((req, res) => {
+  res.sendFile(path.resolve(frontendPath, "index.html"));
+});gti
 
 export default app;
