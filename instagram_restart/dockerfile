@@ -18,3 +18,13 @@ WORKDIR /app
 # install only backend deps
 COPY Backend/package*.json ./
 RUN npm install --omit=dev   
+
+# copy backend code
+COPY Backend/ .
+
+# copy frontend build
+COPY --from=frontend-builder /Frontend/dist ./public
+#  optional but good practice
+ENV NODE_ENV=production
+
+CMD ["node", "server.js"]
